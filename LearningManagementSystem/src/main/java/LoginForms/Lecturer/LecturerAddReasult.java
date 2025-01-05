@@ -67,7 +67,7 @@ public class LecturerAddReasult extends javax.swing.JFrame {
 
             if (rsLecturer.next()) {
                 String lecturerName = rsLecturer.getString("lecturerName");
-                lbl_name.setText("Lecturer Name: " + lecturerName);
+                lbl_name.setText(lecturerName);
             } else {
                 JOptionPane.showMessageDialog(this, "No lecturer found with ID: " + lecturerId);
                 lbl_name.setText("Lecturer Name:");
