@@ -428,6 +428,11 @@ public class AdminViewCourse extends javax.swing.JFrame {
         });
 
         lbl_Add.setIcon(new javax.swing.ImageIcon("C:\\Users\\sanir\\Desktop\\NetBeans\\LearningManagementSystem\\Images\\material-symbols--delete-forever (1).png")); // NOI18N
+        lbl_Add.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lbl_AddMouseClicked(evt);
+            }
+        });
 
         lbl_Add1.setIcon(new javax.swing.ImageIcon("C:\\Users\\sanir\\Desktop\\NetBeans\\LearningManagementSystem\\Images\\icon-park-outline--add (2).png")); // NOI18N
         lbl_Add1.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -605,6 +610,71 @@ try {
         adminAddCourse.setVisible(true);
         this.hide();
     }//GEN-LAST:event_lbl_Add1MouseClicked
+
+    private void lbl_AddMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbl_AddMouseClicked
+        // TODO add your handling code here:
+        String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
+        String dbUsername = "root"; // Your MySQL username
+        String dbPassword = "";     // Your MySQL password
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+
+        try {
+            // Get the courseID from the text field
+            String courseId = lbl_courseId.getText().trim();
+
+            // Ensure courseID is not empty
+            if (courseId.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Course ID is required.");
+                return;
+            }
+
+            // Confirm deletion
+            int confirm = JOptionPane.showConfirmDialog(null, 
+                "Are you sure you want to delete the course with ID: " + courseId + "?", 
+                "Confirm Deletion", 
+                JOptionPane.YES_NO_OPTION);
+
+            if (confirm != JOptionPane.YES_OPTION) {
+                return; // If the user cancels, exit the method
+            }
+
+            // Establish database connection
+            conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
+
+            // SQL query to delete the course
+            String sql = "DELETE FROM Course WHERE courseID = ?";
+            stmt = conn.prepareStatement(sql);
+
+            // Set the courseID parameter
+            stmt.setString(1, courseId);
+
+            // Execute the delete statement
+            int rowsAffected = stmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                JOptionPane.showMessageDialog(null, "Course with ID: " + courseId + " deleted successfully.");
+                pnl_courseData.hide();
+                txt_searchCourse.setText("");
+            } else {
+                JOptionPane.showMessageDialog(null, "No course found with ID: " + courseId);
+            }
+
+        } catch (SQLException ex) {
+            // Handle SQL exceptions
+            JOptionPane.showMessageDialog(null, "Error deleting course: " + ex.getMessage());
+            ex.printStackTrace(); // For debugging purposes
+        } finally {
+            // Close database resources
+            try {
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(null, "Error closing database resources: " + ex.getMessage());
+            }
+        }
+    }//GEN-LAST:event_lbl_AddMouseClicked
 
     /**
      * @param args the command line arguments

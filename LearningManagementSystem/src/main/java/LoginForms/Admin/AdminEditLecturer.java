@@ -585,9 +585,79 @@ public class AdminEditLecturer extends javax.swing.JFrame {
 
     private void btn_saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_saveActionPerformed
         // TODO add your handling code here:
-//        AdminEditStudent adminEditStudent = new AdminEditStudent();
-//        adminEditStudent.setVisible(true);
-//        this.hide();
+         String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
+        String dbUsername = "root"; // Your MySQL username
+        String dbPassword = "";     // Your MySQL password
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+
+        try {
+            // Get lecturer details from the text fields
+            String lecturerId = txt_lecturerId.getText().trim();
+            String lecturerName = txt_lecturerName.getText().trim();
+            String lecturerNIC = txt_lecturerNic.getText().trim();
+            String lecturerContactNo = txt_lecturerContactNo.getText().trim();
+            String lecturerEmail = txt_lecturerEmail.getText().trim();
+            String lecturerDOB = txt_lecturerDob.getText().trim(); // DOB as string
+            String lecturerGender = cmb_gender.getSelectedItem() != null ? cmb_gender.getSelectedItem().toString() : "";
+
+            // Ensure lecturerID is not empty
+            if (lecturerId.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Lecturer ID is required.");
+                return;
+            }
+
+            // Validate DOB format (optional)
+            if (!lecturerDOB.matches("\\d{4}-\\d{2}-\\d{2}")) { // Regex for YYYY-MM-DD
+                JOptionPane.showMessageDialog(null, "Invalid date format for DOB. Use YYYY-MM-DD.");
+                return;
+            }
+
+            // Ensure gender is selected
+            if (lecturerGender.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Please select a gender.");
+                return;
+            }
+
+            // Establish database connection
+            conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
+
+            // SQL query to update lecturer details in the Lecturer table
+            String sql = "UPDATE Lecturer SET lecturerName = ?, lecturerNIC = ?, lecturerContactNo = ?, lecturerEmail = ?, lecturerDOB = ?, lecturerGender = ? WHERE lecturerID = ?";
+            stmt = conn.prepareStatement(sql);
+
+            // Set the parameters for the query
+            stmt.setString(1, lecturerName);
+            stmt.setString(2, lecturerNIC);
+            stmt.setString(3, lecturerContactNo);
+            stmt.setString(4, lecturerEmail);
+            stmt.setString(5, lecturerDOB); // Set DOB as string
+            stmt.setString(6, lecturerGender);
+            stmt.setString(7, lecturerId);
+
+            // Execute the update
+            int rowsAffected = stmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                JOptionPane.showMessageDialog(null, "Lecturer details updated successfully.");
+            } else {
+                JOptionPane.showMessageDialog(null, "No lecturer found with ID: " + lecturerId);
+            }
+
+        } catch (SQLException ex) {
+            // Handle SQL exceptions
+            JOptionPane.showMessageDialog(null, "Error updating lecturer details: " + ex.getMessage());
+            ex.printStackTrace(); // For debugging purposes
+        } finally {
+            // Close database resources
+            try {
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(null, "Error closing database resources: " + ex.getMessage());
+            }
+        }
     }//GEN-LAST:event_btn_saveActionPerformed
 
     private void btn_cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cancelActionPerformed

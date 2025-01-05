@@ -30,6 +30,7 @@ LoginForms\Admin\AdminAddLecturer$3.class
 LoginForms\Student\StudentViewCourse$3.class
 LoginForms\Admin\AdminViewStudent$12.class
 LoginForms\Admin\AdminAddCourse$5.class
+LoginForms\Admin\AdminViewCourse$13.class
 LoginForms\Admin\AdminViewExam$7.class
 LoginForms\StudentForgotPassword$4.class
 LoginForms\Lecturer\LecturerViewTimetable$2.class
@@ -97,6 +98,7 @@ LoginForms\Admin\AdminAddStudent$3.class
 LoginForms\Admin\AdminViewCourse$9.class
 LoginForms\Admin\AdminViewExam.class
 LoginForms\Admin\AdminViewLecturer$7.class
+LoginForms\Admin\AdminViewStudent$13.class
 LoginForms\Admin\AdminAddCourse$4.class
 LoginForms\Lecturer\LecturerViewCourse$9.class
 LoginForms\StudentLogin$4.class

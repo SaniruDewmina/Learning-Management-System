@@ -532,9 +532,82 @@ public class AdminEditCourse extends javax.swing.JFrame {
 
     private void btn_saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_saveActionPerformed
         // TODO add your handling code here:
-        //        AdminEditStudent adminEditStudent = new AdminEditStudent();
-        //        adminEditStudent.setVisible(true);
-        //        this.hide();
+                String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
+        String dbUsername = "root"; // Your MySQL username
+        String dbPassword = "";     // Your MySQL password
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+
+        try {
+            // Get course details from the text fields
+            String courseId = txt_courseId.getText().trim();
+            String courseName = txt_courseName.getText().trim();
+            String numberOfStudentsStr = txt_courseStudentNo.getText().trim();
+            String startDate = txt_courseStart.getText().trim(); // Date as string
+            String endDate = txt_courseEnd.getText().trim();     // Date as string
+
+            // Ensure courseID is not empty
+            if (courseId.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Course ID is required.");
+                return;
+            }
+
+            // Validate number of students
+            int numberOfStudents;
+            try {
+                numberOfStudents = Integer.parseInt(numberOfStudentsStr);
+                if (numberOfStudents < 0 || numberOfStudents > 300) {
+                    JOptionPane.showMessageDialog(null, "Number of students must be between 0 and 300.");
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "Invalid number format for students.");
+                return;
+            }
+
+            // Validate startDate and endDate format (optional)
+            if (!startDate.matches("\\d{4}-\\d{2}-\\d{2}") || !endDate.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                JOptionPane.showMessageDialog(null, "Invalid date format. Use YYYY-MM-DD.");
+                return;
+            }
+
+            // Establish database connection
+            conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
+
+            // SQL query to update course details in the Course table
+            String sql = "UPDATE Course SET courseName = ?, numberOfStudents = ?, startDate = ?, endDate = ? WHERE courseID = ?";
+            stmt = conn.prepareStatement(sql);
+
+            // Set the parameters for the query
+            stmt.setString(1, courseName);
+            stmt.setInt(2, numberOfStudents);
+            stmt.setString(3, startDate);
+            stmt.setString(4, endDate);
+            stmt.setString(5, courseId);
+
+            // Execute the update
+            int rowsAffected = stmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                JOptionPane.showMessageDialog(null, "Course details updated successfully.");
+            } else {
+                JOptionPane.showMessageDialog(null, "No course found with ID: " + courseId);
+            }
+
+        } catch (SQLException ex) {
+            // Handle SQL exceptions
+            JOptionPane.showMessageDialog(null, "Error updating course details: " + ex.getMessage());
+            ex.printStackTrace(); // For debugging purposes
+        } finally {
+            // Close database resources
+            try {
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(null, "Error closing database resources: " + ex.getMessage());
+            }
+        }
     }//GEN-LAST:event_btn_saveActionPerformed
 
     private void btn_cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cancelActionPerformed

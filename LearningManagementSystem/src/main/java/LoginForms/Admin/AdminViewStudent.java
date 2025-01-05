@@ -489,6 +489,11 @@ public class AdminViewStudent extends javax.swing.JFrame {
         btn_delet.setForeground(new java.awt.Color(0, 0, 0));
         btn_delet.setIcon(new javax.swing.ImageIcon("C:\\Users\\sanir\\Desktop\\NetBeans\\LearningManagementSystem\\Images\\material-symbols--delete-forever (1).png")); // NOI18N
         btn_delet.setText("jLabel17");
+        btn_delet.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btn_deletMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -665,6 +670,71 @@ public class AdminViewStudent extends javax.swing.JFrame {
         adminAddStudent.setVisible(true);
         this.hide();
     }//GEN-LAST:event_lbl_addMouseClicked
+
+    private void btn_deletMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_deletMouseClicked
+        // TODO add your handling code here:
+                String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
+        String dbUsername = "root"; // Your MySQL username
+        String dbPassword = "";     // Your MySQL password
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+
+        try {
+            // Get the studentID from the text field
+            String studentId = lbl_studentId.getText().trim();
+
+            // Ensure studentID is not empty
+            if (studentId.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Student ID is required.");
+                return;
+            }
+
+            // Confirm deletion
+            int confirm = JOptionPane.showConfirmDialog(null, 
+                "Are you sure you want to delete the student with ID: " + studentId + "?", 
+                "Confirm Deletion", 
+                JOptionPane.YES_NO_OPTION);
+
+            if (confirm != JOptionPane.YES_OPTION) {
+                return; // If the user cancels, exit the method
+            }
+
+            // Establish database connection
+            conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
+
+            // SQL query to delete the student
+            String sql = "DELETE FROM Student WHERE studentID = ?";
+            stmt = conn.prepareStatement(sql);
+
+            // Set the studentID parameter
+            stmt.setString(1, studentId);
+
+            // Execute the delete statement
+            int rowsAffected = stmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                JOptionPane.showMessageDialog(null, "Student with ID: " + studentId + " deleted successfully.");
+                pnl_studentData.hide();
+                txt_searchStudent.setText("");
+            } else {
+                JOptionPane.showMessageDialog(null, "No student found with ID: " + studentId);
+            }
+
+        } catch (SQLException ex) {
+            // Handle SQL exceptions
+            JOptionPane.showMessageDialog(null, "Error deleting student: " + ex.getMessage());
+            ex.printStackTrace(); // For debugging purposes
+        } finally {
+            // Close database resources
+            try {
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(null, "Error closing database resources: " + ex.getMessage());
+            }
+        }
+    }//GEN-LAST:event_btn_deletMouseClicked
 
     /**
      * @param args the command line arguments

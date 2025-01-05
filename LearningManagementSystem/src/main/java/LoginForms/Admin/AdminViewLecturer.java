@@ -453,6 +453,11 @@ public class AdminViewLecturer extends javax.swing.JFrame {
         );
 
         lbl_Add.setIcon(new javax.swing.ImageIcon("C:\\Users\\sanir\\Desktop\\NetBeans\\LearningManagementSystem\\Images\\material-symbols--delete-forever (1).png")); // NOI18N
+        lbl_Add.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lbl_AddMouseClicked(evt);
+            }
+        });
 
         lbl_Add1.setIcon(new javax.swing.ImageIcon("C:\\Users\\sanir\\Desktop\\NetBeans\\LearningManagementSystem\\Images\\icon-park-outline--add (2).png")); // NOI18N
         lbl_Add1.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -629,6 +634,71 @@ try {
         adminAddLecturer.setVisible(true);
         this.hide();
     }//GEN-LAST:event_lbl_Add1MouseClicked
+
+    private void lbl_AddMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbl_AddMouseClicked
+        // TODO add your handling code here:
+                String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
+        String dbUsername = "root"; // Your MySQL username
+        String dbPassword = "";     // Your MySQL password
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+
+        try {
+            // Get the lecturerID from the text field
+            String lecturerId = lbl_lecturerId.getText().trim();
+
+            // Ensure lecturerID is not empty
+            if (lecturerId.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Lecturer ID is required.");
+                return;
+            }
+
+            // Confirm deletion
+            int confirm = JOptionPane.showConfirmDialog(null, 
+                "Are you sure you want to delete the lecturer with ID: " + lecturerId + "?", 
+                "Confirm Deletion", 
+                JOptionPane.YES_NO_OPTION);
+
+            if (confirm != JOptionPane.YES_OPTION) {
+                return; // If the user cancels, exit the method
+            }
+
+            // Establish database connection
+            conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
+
+            // SQL query to delete the lecturer
+            String sql = "DELETE FROM Lecturer WHERE lecturerID = ?";
+            stmt = conn.prepareStatement(sql);
+
+            // Set the lecturerID parameter
+            stmt.setString(1, lecturerId);
+
+            // Execute the delete statement
+            int rowsAffected = stmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                JOptionPane.showMessageDialog(null, "Lecturer with ID: " + lecturerId + " deleted successfully.");
+                pnl_lecturerData.hide();
+                txt_searchLecturer.setText("");
+            } else {
+                JOptionPane.showMessageDialog(null, "No lecturer found with ID: " + lecturerId);
+            }
+
+        } catch (SQLException ex) {
+            // Handle SQL exceptions
+            JOptionPane.showMessageDialog(null, "Error deleting lecturer: " + ex.getMessage());
+            ex.printStackTrace(); // For debugging purposes
+        } finally {
+            // Close database resources
+            try {
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(null, "Error closing database resources: " + ex.getMessage());
+            }
+        }
+    }//GEN-LAST:event_lbl_AddMouseClicked
 
     /**
      * @param args the command line arguments

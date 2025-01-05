@@ -604,7 +604,79 @@ public class AdminEditStudent extends javax.swing.JFrame {
 
     private void btn_editActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_editActionPerformed
         // TODO add your handling code here:
-        
+                String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
+        String dbUsername = "root"; // Your MySQL username
+        String dbPassword = "";     // Your MySQL password
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+
+        try {
+            // Get student details from the text fields
+            String studentId = txt_studentId.getText().trim();
+            String studentName = txt_studentName.getText().trim();
+            String studentNIC = txt_studentNic.getText().trim();
+            String studentContactNo = txt_studentContactNo.getText().trim();
+            String studentEmail = txt_studentEmail.getText().trim();
+            String studentDOB = txt_studentDob.getText().trim(); // DOB as string
+            String studentGender = cmb_gender.getSelectedItem() != null ? cmb_gender.getSelectedItem().toString() : "";
+
+            // Ensure studentID is not empty
+            if (studentId.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Student ID is required.");
+                return;
+            }
+
+            // Validate DOB format (optional)
+            if (!studentDOB.matches("\\d{4}-\\d{2}-\\d{2}")) { // Regex for YYYY-MM-DD
+                JOptionPane.showMessageDialog(null, "Invalid date format for DOB. Use YYYY-MM-DD.");
+                return;
+            }
+
+            // Ensure gender is selected
+            if (studentGender.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Please select a gender.");
+                return;
+            }
+
+            // Establish database connection
+            conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
+
+            // SQL query to update student details in the Student table
+            String sql = "UPDATE Student SET studentName = ?, studentNIC = ?, studentContactNo = ?, studentEmail = ?, studentDOB = ?, studentGender = ? WHERE studentID = ?";
+            stmt = conn.prepareStatement(sql);
+
+            // Set the parameters for the query
+            stmt.setString(1, studentName);
+            stmt.setString(2, studentNIC);
+            stmt.setString(3, studentContactNo);
+            stmt.setString(4, studentEmail);
+            stmt.setString(5, studentDOB); // Set DOB as string
+            stmt.setString(6, studentGender);
+            stmt.setString(7, studentId);
+
+            // Execute the update
+            int rowsAffected = stmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                JOptionPane.showMessageDialog(null, "Student details updated successfully.");
+            } else {
+                JOptionPane.showMessageDialog(null, "No student found with ID: " + studentId);
+            }
+
+        } catch (SQLException ex) {
+            // Handle SQL exceptions
+            JOptionPane.showMessageDialog(null, "Error updating student details: " + ex.getMessage());
+            ex.printStackTrace(); // For debugging purposes
+        } finally {
+            // Close database resources
+            try {
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(null, "Error closing database resources: " + ex.getMessage());
+            }
+        }        
     }//GEN-LAST:event_btn_editActionPerformed
 
     private void btn_cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cancelActionPerformed

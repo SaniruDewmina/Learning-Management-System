@@ -586,6 +586,9 @@
           <Image iconType="2" name="C:\Users\sanir\Desktop\NetBeans\LearningManagementSystem\Images\material-symbols--delete-forever (1).png"/>
         </Property>
       </Properties>
+      <Events>
+        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="lbl_AddMouseClicked"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="lbl_Add1">
       <Properties>
