@@ -607,7 +607,7 @@ try {
 
     private void btn_editActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_editActionPerformed
         // TODO add your handling code here:
-        AdminEditLecturer adminEditLecturer = new AdminEditLecturer(lbl_index.getText());
+        AdminEditLecturer adminEditLecturer = new AdminEditLecturer(lbl_index.getText(),lbl_lecturerId.getText());
         adminEditLecturer.setVisible(true);
         this.hide();
     }//GEN-LAST:event_btn_editActionPerformed

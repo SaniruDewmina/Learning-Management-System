@@ -292,7 +292,6 @@ LoginForms\Admin\AdminViewLecturer$1.class
 LoginForms\AdminLogin$6.class
 LoginForms\Admin\AdminEditLecturer.class
 LoginForms\Home$5.class
-LoginForms\Admin\AdminEditCourse$15.class
 LoginForms\Admin\AdminAddStudent$18.class
 LoginForms\AdminForgotPassword$2.class
 LoginForms\Lecturer\LecturerDashboard$7.class
@@ -311,7 +310,6 @@ LoginForms\Admin\AdminDashboard.class
 LoginForms\Home$6.class
 LoginForms\Admin\AdminEditStudent$7.class
 LoginForms\Student\StudentDashboard$4.class
-LoginForms\Admin\AdminEditCourse$16.class
 LoginForms\Admin\AdminEditLecturer$2.class
 LoginForms\Admin\AdminEditStudent$10.class
 LoginForms\Admin\AdminAddStudent$19.class

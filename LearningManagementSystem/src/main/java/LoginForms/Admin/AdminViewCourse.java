@@ -590,7 +590,7 @@ try {
 
     private void btn_editActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_editActionPerformed
         // TODO add your handling code here:
-        AdminEditCourse adminEditCourse = new AdminEditCourse(lbl_index.getText());
+        AdminEditCourse adminEditCourse = new AdminEditCourse(lbl_index.getText(),lbl_courseId.getText());
         adminEditCourse.setVisible(true);
         this.hide();
     }//GEN-LAST:event_btn_editActionPerformed

@@ -581,8 +581,8 @@ public class AdminViewStudent extends javax.swing.JFrame {
     }//GEN-LAST:event_txt_searchStudentActionPerformed
 
     private void btn_editActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_editActionPerformed
-        // TODO add your handling code here:
-        AdminEditStudent adminEditStudent = new AdminEditStudent(lbl_index.getText());
+        // TODO add your handling code here:lbl_studentId
+        AdminEditStudent adminEditStudent = new AdminEditStudent(lbl_index.getText(),lbl_studentId.getText());
         adminEditStudent.setVisible(true);
         this.hide();
     }//GEN-LAST:event_btn_editActionPerformed
