@@ -125,6 +125,7 @@ LoginForms\AdminForgotPassword$8.class
 LoginForms\Admin\AdminAddCourse$2.class
 LoginForms\Admin\AdminViewExam$6.class
 LoginForms\Admin\AdminEditLecturer$9.class
+LoginForms\Admin\AdminViewLecturer$13.class
 LoginForms\Admin\AdminEditCourse$3.class
 LoginForms\Admin\AdminEditLecturer$14.class
 LoginForms\Admin\AdminEditStudent$2.class

@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Logger;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -32,7 +33,7 @@ public class StudentViewTimetable extends javax.swing.JFrame {
         this.studentId = studentId;
         lbl_index.setText(studentId);
         // Database connection details
-        String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
+               String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
         String dbUsername = "root"; // Your MySQL username
         String dbPassword = "";     // Your MySQL password
 
@@ -41,53 +42,88 @@ public class StudentViewTimetable extends javax.swing.JFrame {
         ResultSet rs = null;
 
         try {
-            // Get the studentId from lbl_index
+            // Get the studentID from lbl_index
             String studentID = lbl_index.getText().trim();
 
-            // Ensure studentId is not empty
+            // Ensure studentID is not empty
             if (studentID.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Student ID is missing in lbl_index.");
+                JOptionPane.showMessageDialog(null, "Student ID is missing in lbl_index.");
                 return;
             }
 
             // Establish database connection
             conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
 
-            // SQL query to fetch studentName from the Student table
-            String sql = "SELECT studentName FROM Student WHERE studentID = ?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, studentID); // Set the studentId as a parameter
+            // Step 1: Retrieve student name and courseID
+            String studentQuery = "SELECT studentName, courseID FROM Student WHERE studentID = ?";
+            stmt = conn.prepareStatement(studentQuery);
+            stmt.setString(1, studentID); // Set the studentID as a parameter
 
-            // Execute the query
+            // Execute the query to fetch studentName and courseID
             rs = stmt.executeQuery();
 
+            String studentName = null;
+            String courseId = null;
             if (rs.next()) {
-                // Retrieve the student name and set it to lbl_name
-                String studentName = rs.getString("studentName");
-                lbl_name.setText(studentName); // Display the student name in lbl_name
+                studentName = rs.getString("studentName");
+                courseId = rs.getString("courseID");
+
+                // Set the student's name in lbl_name
+                lbl_name.setText(studentName);
             } else {
                 // Display message if student ID does not exist in the database
-                JOptionPane.showMessageDialog(this, "No student found with ID: " + studentID);
+                JOptionPane.showMessageDialog(null, "No student found with ID: " + studentID);
                 lbl_name.setText(""); // Clear lbl_name
+                return; // Exit since no valid student was found
             }
+
+            // Close previous resources for re-use
+            rs.close();
+            stmt.close();
+
+            // Step 2: Retrieve Timetable Details for the Course with Lecturer Name
+            String timetableQuery = "SELECT t.scheduleDate, t.scheduleTime, t.subjectName, l.lecturerName " +
+                                    "FROM Timetable t " +
+                                    "JOIN Lecturer l ON t.lecturerID = l.lecturerID " +
+                                    "WHERE t.courseID = ?";
+            stmt = conn.prepareStatement(timetableQuery);
+            stmt.setString(1, courseId); // Set the courseID as a parameter
+
+            // Execute the query for timetable details
+            rs = stmt.executeQuery();
+
+            // Get the table model of tbl_timetable
+            DefaultTableModel model = (DefaultTableModel) tbl_timetable.getModel();
+
+            // Clear existing rows in the table
+            model.setRowCount(0);
+
+            // Add columns to the table model (if not already added)
+            model.setColumnIdentifiers(new Object[]{"Schedule Date", "Schedule Time", "Subject Name", "Lecturer Name"});
+
+            // Iterate through the result set and populate the table
+            while (rs.next()) {
+                String scheduleDate = rs.getDate("scheduleDate").toString();
+                String scheduleTime = rs.getTime("scheduleTime").toString();
+                String subjectName = rs.getString("subjectName");
+                String lecturerName = rs.getString("lecturerName");
+
+                // Add a row to the table
+                model.addRow(new Object[]{scheduleDate, scheduleTime, subjectName, lecturerName});
+            }
+
         } catch (SQLException ex) {
             // Handle SQL exceptions
-            JOptionPane.showMessageDialog(this, "Error retrieving student name: " + ex.getMessage());
+            JOptionPane.showMessageDialog(null, "Error retrieving student details or timetable: " + ex.getMessage());
             ex.printStackTrace(); // For debugging purposes
         } finally {
             // Close database resources
             try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                }
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
             } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error closing database resources: " + ex.getMessage());
+                JOptionPane.showMessageDialog(null, "Error closing database resources: " + ex.getMessage());
             }
         }
 
@@ -113,7 +149,7 @@ public class StudentViewTimetable extends javax.swing.JFrame {
         btn_logout = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tbl_timetable = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -234,7 +270,7 @@ public class StudentViewTimetable extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel1.setText("Schedule");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tbl_timetable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -242,10 +278,10 @@ public class StudentViewTimetable extends javax.swing.JFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Date", "Time", "Subject", "Lecurer"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tbl_timetable);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -253,13 +289,15 @@ public class StudentViewTimetable extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 159, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 284, Short.MAX_VALUE)
                         .addComponent(jLabel1)
-                        .addGap(120, 120, 120))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 347, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(144, 144, 144))
+                        .addGap(264, 264, 264))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(20, 20, 20)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 612, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -267,9 +305,9 @@ public class StudentViewTimetable extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(52, 52, 52)
                 .addComponent(jLabel1)
-                .addGap(62, 62, 62)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 312, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 402, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(31, 31, 31))
         );
 
         pack();
@@ -352,9 +390,9 @@ public class StudentViewTimetable extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JLabel lbl_index;
     private javax.swing.JLabel lbl_name;
     private javax.swing.JLabel lbl_user;
+    private javax.swing.JTable tbl_timetable;
     // End of variables declaration//GEN-END:variables
 }
