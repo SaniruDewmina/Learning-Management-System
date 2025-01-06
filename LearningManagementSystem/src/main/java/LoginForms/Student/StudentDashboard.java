@@ -236,7 +236,7 @@ public class StudentDashboard extends javax.swing.JFrame {
         );
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setForeground(new java.awt.Color(0, 0, 0));
         jLabel1.setText("Student Dashboard");
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(

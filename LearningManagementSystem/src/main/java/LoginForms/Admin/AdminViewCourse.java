@@ -15,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.*;
+
 /**
  *
  * @author sanir
@@ -31,7 +32,7 @@ public class AdminViewCourse extends javax.swing.JFrame {
         this.adminID = adminID;
         lbl_index.setText(adminID);
         pnl_courseData.setVisible(false);
-        
+
         String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
         String dbUsername = "root"; // Your MySQL username
         String dbPassword = "";     // Your MySQL password
@@ -529,55 +530,57 @@ public class AdminViewCourse extends javax.swing.JFrame {
     private void btn_searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_searchActionPerformed
         // TODO add your handling code here:
         String url = "jdbc:mysql://localhost:3306/LMS";
-String user = "root";
-String password = "";
+        String user = "root";
+        String password = "";
 
-String courseId = txt_searchCourse.getText().trim();
+        String courseId = txt_searchCourse.getText().trim();
 
 // Validate if the course ID field is empty
-if (courseId.isEmpty()) {
-    JOptionPane.showMessageDialog(this, "Please enter a Course ID.");
-    return;
-}
+        if (courseId.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please enter a Course ID.");
+            return;
+        }
 
 // Validate if the course ID contains only alphanumeric characters
-if (!courseId.matches("[a-zA-Z0-9]+")) {
-    JOptionPane.showMessageDialog(this, "Invalid characters in Course ID. Please enter a valid Course ID.");
-    return;
-}
+        if (!courseId.matches("[a-zA-Z0-9]+")) {
+            JOptionPane.showMessageDialog(this, "Invalid characters in Course ID. Please enter a valid Course ID.");
+            return;
+        }
 
-try {
-    // Establish connection to the database
-    Connection conn = DriverManager.getConnection(url, user, password);
-    
-    // Prepare SQL query to fetch course data based on courseID
-    String query = "SELECT * FROM Course WHERE courseID = ?";
-    PreparedStatement stmt = conn.prepareStatement(query);
-    stmt.setString(1, courseId);
-    
-    // Execute the query and process the result
-    ResultSet rs = stmt.executeQuery();
+        try {
+            // Establish connection to the database
+            Connection conn = DriverManager.getConnection(url, user, password);
 
-    if (rs.next()) {
-        lbl_courseId.setText(rs.getString("courseID"));
-        lbl_courseName.setText(rs.getString("courseName"));
-        lbl_numberOfStudents.setText(String.valueOf(rs.getInt("numberOfStudents")));
-        lbl_startDate.setText(rs.getString("startDate"));
-        lbl_endDate.setText(rs.getString("endDate"));
-    } else {
-        JOptionPane.showMessageDialog(this, "No course found with ID: " + courseId);
-    }
+            // Prepare SQL query to fetch course data based on courseID
+            String query = "SELECT * FROM Course WHERE courseID = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setString(1, courseId);
 
-    // Close resources
-    rs.close();
-    stmt.close();
-    conn.close();
-} catch (SQLException ex) {
-    ex.printStackTrace();
-    JOptionPane.showMessageDialog(this, "Error retrieving course data.");
-}
+            // Execute the query and process the result
+            ResultSet rs = stmt.executeQuery();
 
-        pnl_courseData.setVisible(true);
+            if (rs.next()) {
+                lbl_courseId.setText(rs.getString("courseID"));
+                lbl_courseName.setText(rs.getString("courseName"));
+                lbl_numberOfStudents.setText(String.valueOf(rs.getInt("numberOfStudents")));
+                lbl_startDate.setText(rs.getString("startDate"));
+                lbl_endDate.setText(rs.getString("endDate"));
+                pnl_courseData.setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(this, "No course found with ID: " + courseId);
+                txt_searchCourse.setText("");
+            }
+
+            // Close resources
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error retrieving course data.");
+        }
+
+        
     }//GEN-LAST:event_btn_searchActionPerformed
 
     private void btn_cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cancelActionPerformed
@@ -595,7 +598,7 @@ try {
 
     private void btn_editActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_editActionPerformed
         // TODO add your handling code here:
-        AdminEditCourse adminEditCourse = new AdminEditCourse(lbl_index.getText(),lbl_courseId.getText());
+        AdminEditCourse adminEditCourse = new AdminEditCourse(lbl_index.getText(), lbl_courseId.getText());
         adminEditCourse.setVisible(true);
         this.hide();
     }//GEN-LAST:event_btn_editActionPerformed
@@ -631,10 +634,10 @@ try {
             }
 
             // Confirm deletion
-            int confirm = JOptionPane.showConfirmDialog(null, 
-                "Are you sure you want to delete the course with ID: " + courseId + "?", 
-                "Confirm Deletion", 
-                JOptionPane.YES_NO_OPTION);
+            int confirm = JOptionPane.showConfirmDialog(null,
+                    "Are you sure you want to delete the course with ID: " + courseId + "?",
+                    "Confirm Deletion",
+                    JOptionPane.YES_NO_OPTION);
 
             if (confirm != JOptionPane.YES_OPTION) {
                 return; // If the user cancels, exit the method
@@ -668,8 +671,12 @@ try {
         } finally {
             // Close database resources
             try {
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(null, "Error closing database resources: " + ex.getMessage());
             }
