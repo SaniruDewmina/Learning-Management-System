@@ -15,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.*;
+
 /**
  *
  * @author sanir
@@ -31,7 +32,7 @@ public class AdminViewLecturer extends javax.swing.JFrame {
         this.adminID = adminID;
         lbl_index.setText(adminID);
         pnl_lecturerData.setVisible(false);
-        
+
         String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
         String dbUsername = "root"; // Your MySQL username
         String dbPassword = "";     // Your MySQL password
@@ -558,61 +559,61 @@ public class AdminViewLecturer extends javax.swing.JFrame {
     private void btn_searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_searchActionPerformed
         // TODO add your handling code here:
         String url = "jdbc:mysql://localhost:3306/LMS";
-String user = "root";
-String password = "";
+        String user = "root";
+        String password = "";
 
-String lecturerId = txt_searchLecturer.getText().trim();
+        String lecturerId = txt_searchLecturer.getText().trim();
 
 // Validate if the lecturer ID field is empty
-if (lecturerId.isEmpty()) {
-    JOptionPane.showMessageDialog(this, "Please enter a Lecturer ID.");
-    return;
-}
+        if (lecturerId.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please enter a Lecturer ID.");
+            return;
+        }
 
 // Validate if the lecturer ID contains only alphanumeric characters
-if (!lecturerId.matches("[a-zA-Z0-9]+")) {
-    JOptionPane.showMessageDialog(this, "Invalid characters in Lecturer ID. Please enter a valid Lecturer ID.");
-    return;
-}
+        if (!lecturerId.matches("[a-zA-Z0-9]+")) {
+            JOptionPane.showMessageDialog(this, "Invalid characters in Lecturer ID. Please enter a valid Lecturer ID.");
+            return;
+        }
 
-try {
-    // Establish connection to the database
-    Connection conn = DriverManager.getConnection(url, user, password);
-    
-    // Prepare SQL query to fetch lecturer data based on lecturerID
-    String query = "SELECT * FROM Lecturer WHERE lecturerID = ?";
-    PreparedStatement stmt = conn.prepareStatement(query);
-    stmt.setString(1, lecturerId);
-    
-    // Execute the query and process the result
-    ResultSet rs = stmt.executeQuery();
+        try {
+            // Establish connection to the database
+            Connection conn = DriverManager.getConnection(url, user, password);
 
-    if (rs.next()) {
-        lbl_lecturerId.setText(rs.getString("lecturerID"));
-        lbl_lecturerName.setText(rs.getString("lecturerName"));
-        lbl_lecturerNic.setText(rs.getString("lecturerNIC"));
-        lbl_LecturerContactNo.setText(rs.getString("lecturerContactNo"));
-        lbl_lecturerEmail.setText(rs.getString("lecturerEmail"));
-        lbl_lecturerDob.setText(rs.getString("lecturerDOB"));
-    } else {
-        JOptionPane.showMessageDialog(this, "No lecturer found with ID: " + lecturerId);
-    }
+            // Prepare SQL query to fetch lecturer data based on lecturerID
+            String query = "SELECT * FROM Lecturer WHERE lecturerID = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setString(1, lecturerId);
 
-    // Close resources
-    rs.close();
-    stmt.close();
-    conn.close();
-} catch (SQLException ex) {
-    ex.printStackTrace();
-    JOptionPane.showMessageDialog(this, "Error retrieving lecturer data.");
-}
+            // Execute the query and process the result
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                lbl_lecturerId.setText(rs.getString("lecturerID"));
+                lbl_lecturerName.setText(rs.getString("lecturerName"));
+                lbl_lecturerNic.setText(rs.getString("lecturerNIC"));
+                lbl_LecturerContactNo.setText(rs.getString("lecturerContactNo"));
+                lbl_lecturerEmail.setText(rs.getString("lecturerEmail"));
+                lbl_lecturerDob.setText(rs.getString("lecturerDOB"));
+            } else {
+                JOptionPane.showMessageDialog(this, "No lecturer found with ID: " + lecturerId);
+            }
+
+            // Close resources
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error retrieving lecturer data.");
+        }
 
         pnl_lecturerData.setVisible(true);
     }//GEN-LAST:event_btn_searchActionPerformed
 
     private void btn_editActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_editActionPerformed
         // TODO add your handling code here:
-        AdminEditLecturer adminEditLecturer = new AdminEditLecturer(lbl_index.getText(),lbl_lecturerId.getText());
+        AdminEditLecturer adminEditLecturer = new AdminEditLecturer(lbl_index.getText(), lbl_lecturerId.getText());
         adminEditLecturer.setVisible(true);
         this.hide();
     }//GEN-LAST:event_btn_editActionPerformed
@@ -637,7 +638,7 @@ try {
 
     private void lbl_AddMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbl_AddMouseClicked
         // TODO add your handling code here:
-                String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
+        String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
         String dbUsername = "root"; // Your MySQL username
         String dbPassword = "";     // Your MySQL password
 
@@ -655,10 +656,10 @@ try {
             }
 
             // Confirm deletion
-            int confirm = JOptionPane.showConfirmDialog(null, 
-                "Are you sure you want to delete the lecturer with ID: " + lecturerId + "?", 
-                "Confirm Deletion", 
-                JOptionPane.YES_NO_OPTION);
+            int confirm = JOptionPane.showConfirmDialog(null,
+                    "Are you sure you want to delete the lecturer with ID: " + lecturerId + "?",
+                    "Confirm Deletion",
+                    JOptionPane.YES_NO_OPTION);
 
             if (confirm != JOptionPane.YES_OPTION) {
                 return; // If the user cancels, exit the method
@@ -692,8 +693,12 @@ try {
         } finally {
             // Close database resources
             try {
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(null, "Error closing database resources: " + ex.getMessage());
             }
