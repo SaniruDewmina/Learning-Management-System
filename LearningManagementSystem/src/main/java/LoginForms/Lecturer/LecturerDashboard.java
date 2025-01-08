@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Logger;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 /**
  *
  * @author sanir
@@ -32,58 +33,87 @@ public class LecturerDashboard extends javax.swing.JFrame {
         lbl_index.setText(lecturerID);
         
         // Database connection details
-String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
-String dbUsername = "root"; // Your MySQL username
-String dbPassword = "";     // Your MySQL password
+    String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
+    String dbUsername = "root"; // Your MySQL username
+    String dbPassword = "";     // Your MySQL password
 
-Connection conn = null;
-PreparedStatement stmt = null;
-ResultSet rs = null;
+    Connection conn = null;
+    PreparedStatement lecturerStmt = null;
+    PreparedStatement timetableStmt = null;
+    ResultSet lecturerRs = null;
+    ResultSet timetableRs = null;
 
-try {
-    // Get the lecturerID from lbl_index
-    String lecturerId = lbl_index.getText().trim();
-
-    // Ensure lecturerID is not empty
-    if (lecturerId.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Lecturer ID is missing in lbl_index.");
-        return;
-    }
-
-    // Establish database connection
-    conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
-
-    // SQL query to fetch lecturerName from the Lecturer table
-    String sql = "SELECT lecturerName FROM Lecturer WHERE lecturerID = ?";
-    stmt = conn.prepareStatement(sql);
-    stmt.setString(1, lecturerId); // Set the lecturerID as a parameter
-
-    // Execute the query
-    rs = stmt.executeQuery();
-
-    if (rs.next()) {
-        // Retrieve the lecturer name and set it to lbl_name
-        String lecturerName = rs.getString("lecturerName");
-        lbl_name.setText(lecturerName); // Display the lecturer name in lbl_name
-    } else {
-        // Display message if lecturer ID does not exist in the database
-        JOptionPane.showMessageDialog(this, "No lecturer found with ID: " + lecturerId);
-        lbl_name.setText(""); // Clear lbl_name
-    }
-} catch (SQLException ex) {
-    // Handle SQL exceptions
-    JOptionPane.showMessageDialog(this, "Error retrieving lecturer name: " + ex.getMessage());
-    ex.printStackTrace(); // For debugging purposes
-} finally {
-    // Close database resources
     try {
-        if (rs != null) rs.close();
-        if (stmt != null) stmt.close();
-        if (conn != null) conn.close();
+        // Get the lecturer ID from lbl_index
+        String lecturerId = lbl_index.getText().trim();
+
+        // Validate if the lecturer ID is empty
+        if (lecturerId.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Lecturer ID is missing in lbl_index.");
+            return;
+        }
+
+        // Establish database connection
+        conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
+
+        // Step 1: Retrieve lecturer name
+        String lecturerQuery = "SELECT lecturerName FROM Lecturer WHERE lecturerID = ?";
+        lecturerStmt = conn.prepareStatement(lecturerQuery);
+        lecturerStmt.setString(1, lecturerId);
+        lecturerRs = lecturerStmt.executeQuery();
+
+        if (lecturerRs.next()) {
+            // Retrieve the lecturer name and set it to lbl_name
+            String lecturerName = lecturerRs.getString("lecturerName");
+            lbl_name.setText(lecturerName); // Display the lecturer name in lbl_name
+        } else {
+            // Display message if lecturer ID does not exist in the database
+            JOptionPane.showMessageDialog(this, "No lecturer found with ID: " + lecturerId);
+            lbl_name.setText(""); // Clear lbl_name
+            return; // Exit the method as no valid lecturer was found
+        }
+
+        // Step 2: Retrieve timetable details for the lecturer ID
+        String timetableQuery = "SELECT scheduleDate, subjectName, courseID FROM Timetable WHERE lecturerID = ?";
+        timetableStmt = conn.prepareStatement(timetableQuery);
+        timetableStmt.setString(1, lecturerId);
+        timetableRs = timetableStmt.executeQuery();
+
+        // Get the table model of tbl_timetable
+        DefaultTableModel model = (DefaultTableModel) tbl_timetable.getModel();
+
+        // Clear any existing rows in the table
+        model.setRowCount(0);
+
+        // Set column headers for the JTable
+        model.setColumnIdentifiers(new Object[]{"Schedule Date", "Subject Name", "Course ID"});
+
+        // Populate the JTable with timetable data
+        while (timetableRs.next()) {
+            String scheduleDate = timetableRs.getDate("scheduleDate").toString();
+            String subjectName = timetableRs.getString("subjectName");
+            String courseId = timetableRs.getString("courseID");
+
+            // Add a row to the table
+            model.addRow(new Object[]{scheduleDate, subjectName, courseId});
+        }
+
     } catch (SQLException ex) {
-        JOptionPane.showMessageDialog(this, "Error closing database resources: " + ex.getMessage());
+        // Display error message and print stack trace
+        JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+        ex.printStackTrace();
+    } finally {
+        // Close all resources
+        try {
+            if (lecturerRs != null) lecturerRs.close();
+            if (timetableRs != null) timetableRs.close();
+            if (lecturerStmt != null) lecturerStmt.close();
+            if (timetableStmt != null) timetableStmt.close();
+            if (conn != null) conn.close();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error closing database resources: " + ex.getMessage());
+        }
     }
-}
 
         
     }
@@ -108,7 +138,7 @@ try {
         btn_logout = new javax.swing.JButton();
         btn_timetable1 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tbl_timetable = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -241,21 +271,21 @@ try {
                 .addContainerGap())
         );
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tbl_timetable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null}
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
             },
             new String [] {
-                "Course", "Date"
+                "Date", "Subject", "Course"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tbl_timetable);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(0, 0, 0));
@@ -271,11 +301,11 @@ try {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(218, 218, 218)
                         .addComponent(jLabel1)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap(211, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 122, Short.MAX_VALUE)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 420, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(108, 108, 108))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 594, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(26, 26, 26))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -376,9 +406,9 @@ try {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JLabel lbl_index;
     private javax.swing.JLabel lbl_name;
     private javax.swing.JLabel lbl_user;
+    private javax.swing.JTable tbl_timetable;
     // End of variables declaration//GEN-END:variables
 }
