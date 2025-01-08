@@ -685,81 +685,84 @@ public class AdminAddStudent extends javax.swing.JFrame {
 
     private void btn_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addActionPerformed
         // TODO add your handling code here:
-        String url = "jdbc:mysql://localhost:3306/LMS"; // Replace with your database URL
-    String user = "root"; // MySQL username
-    String password = ""; // MySQL password
+String url = "jdbc:mysql://localhost:3306/LMS"; // Replace with your database URL
+String user = "root"; // MySQL username
+String password = ""; // MySQL password
 
-    String studentId = txt_studentId.getText().trim();
-    String studentName = txt_studentName.getText().trim();
-    String studentNic = txt_studentNic.getText().trim();
-    String studentDob = txt_studentDob.getText().trim();
-    String studentAddress = txt_studentAddress.getText().trim();
-    String studentContactNo = txt_studentContactNo.getText().trim();
-    String studentEmail = txt_studentEmail.getText().trim();
-    String studentGender = (String) cmb_gender.getSelectedItem(); // Get gender from combo box
-    String studentPassword = txt_password.getText();
-    String confirmPassword = txt_confirmPassword.getText();
-    String studentSecretPin = txt_secretPin.getText();
+String studentId = txt_studentId.getText().trim();
+String studentName = txt_studentName.getText().trim();
+String studentNic = txt_studentNic.getText().trim();
+String studentDob = txt_studentDob.getText().trim();
+String courseId = txt_studentCourse.getText().trim(); // Correctly use the course ID input
+String studentAddress = txt_studentAddress.getText().trim();
+String studentContactNo = txt_studentContactNo.getText().trim();
+String studentEmail = txt_studentEmail.getText().trim();
+String studentGender = (String) cmb_gender.getSelectedItem(); // Get gender from combo box
+String studentPassword = txt_password.getText();
+String confirmPassword = txt_confirmPassword.getText();
+String studentSecretPin = txt_secretPin.getText();
 
-    // Validate fields
-    if (studentId.isEmpty() || studentName.isEmpty() || studentNic.isEmpty() || studentDob.isEmpty() || 
-        studentAddress.isEmpty() || studentContactNo.isEmpty() || studentEmail.isEmpty() || 
-        studentPassword.isEmpty() || confirmPassword.isEmpty() || studentSecretPin.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "All fields are required.");
-        return;
+// Validate fields
+if (studentId.isEmpty() || studentName.isEmpty() || studentNic.isEmpty() || studentDob.isEmpty() || courseId.isEmpty() ||
+    studentAddress.isEmpty() || studentContactNo.isEmpty() || studentEmail.isEmpty() || 
+    studentPassword.isEmpty() || confirmPassword.isEmpty() || studentSecretPin.isEmpty()) {
+    JOptionPane.showMessageDialog(this, "All fields are required.");
+    return;
+}
+
+// Validate password and confirm password match
+if (!studentPassword.equals(confirmPassword)) {
+    JOptionPane.showMessageDialog(this, "Password and Confirm Password do not match.");
+    return;
+}
+
+try {
+    // Establish connection
+    Connection conn = DriverManager.getConnection(url, user, password);
+
+    // Insert query
+    String query = "INSERT INTO Student (studentID, studentName, studentNIC, studentDOB, courseID, studentAddress, studentContactNo, " +
+                   "studentEmail, studentGender, studentPassword, studentSecretPin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+    PreparedStatement stmt = conn.prepareStatement(query);
+    stmt.setString(1, studentId);
+    stmt.setString(2, studentName);
+    stmt.setString(3, studentNic);
+    stmt.setString(4, studentDob);
+    stmt.setString(5, courseId); // Set course ID correctly
+    stmt.setString(6, studentAddress);
+    stmt.setString(7, studentContactNo);
+    stmt.setString(8, studentEmail);
+    stmt.setString(9, studentGender); // Set gender
+    stmt.setString(10, studentPassword); // Set password
+    stmt.setString(11, studentSecretPin);
+
+    int rowsInserted = stmt.executeUpdate();
+
+    if (rowsInserted > 0) {
+        JOptionPane.showMessageDialog(this, "Student added successfully.");
+        txt_studentId.setText("");
+        txt_studentName.setText("");
+        txt_studentNic.setText("");
+        txt_studentDob.setText("");
+        txt_studentAddress.setText("");
+        txt_studentContactNo.setText("");
+        txt_studentEmail.setText("");
+        cmb_gender.setSelectedIndex(0); // Reset combo box to the first item
+        txt_password.setText("");
+        txt_confirmPassword.setText("");
+        txt_secretPin.setText("");
+        txt_studentCourse.setText("");
     }
 
-    // Validate password and confirm password match
-    if (!studentPassword.equals(confirmPassword)) {
-        JOptionPane.showMessageDialog(this, "Password and Confirm Password do not match.");
-        return;
-    }
-
-    try {
-        // Establish connection
-        Connection conn = DriverManager.getConnection(url, user, password);
-
-        // Insert query
-        String query = "INSERT INTO Student (studentID, studentName, studentNIC, studentDOB, studentAddress, studentContactNo, " +
-                       "studentEmail, studentGender, studentPassword, studentSecretPin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-        PreparedStatement stmt = conn.prepareStatement(query);
-        stmt.setString(1, studentId);
-        stmt.setString(2, studentName);
-        stmt.setString(3, studentNic);
-        stmt.setString(4, studentDob);
-        stmt.setString(5, studentAddress);
-        stmt.setString(6, studentContactNo);
-        stmt.setString(7, studentEmail);
-        stmt.setString(8, studentGender); // Set gender
-        stmt.setString(9, studentPassword); // Set password
-        stmt.setString(10, studentSecretPin);
-
-        int rowsInserted = stmt.executeUpdate();
-
-        if (rowsInserted > 0) {
-            JOptionPane.showMessageDialog(this, "Student added successfully.");
-            txt_studentId.setText("");
-            txt_studentName.setText("");
-            txt_studentNic.setText("");
-            txt_studentDob.setText("");
-            txt_studentAddress.setText("");
-            txt_studentContactNo.setText("");
-            txt_studentEmail.setText("");
-            cmb_gender.setSelectedIndex(0); // Reset combo box to the first item
-            txt_password.setText("");
-            txt_confirmPassword.setText("");
-            txt_secretPin.setText("");
-           
-        }
-
-        // Close resources
-        stmt.close();
-        conn.close();
-    } catch (SQLException ex) {
-        ex.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Error adding student.");
-    }
+    // Close resources
+    stmt.close();
+    conn.close();
+} catch (SQLException ex) {
+    ex.printStackTrace();
+    JOptionPane.showMessageDialog(this, "Error adding student: " + ex.getMessage());
+}
+     
     }//GEN-LAST:event_btn_addActionPerformed
 
     private void btn_cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cancelActionPerformed
