@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Logger;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -32,66 +33,126 @@ public class AdminDashboard extends javax.swing.JFrame {
         initComponents();
         this.adminID = adminID;
         lbl_index.setText(adminID);
-        
-        String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
-        String dbUsername = "root"; // Your MySQL username
-        String dbPassword = "";     // Your MySQL password
 
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
+    String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
+    String dbUsername = "root"; // Your MySQL username
+    String dbPassword = "";     // Your MySQL password
 
-        try {
-            // Get the adminID from lbl_index
-            String adminId = lbl_index.getText().trim();
+    Connection conn = null;
+    PreparedStatement pstmt = null;
+    Statement stmt = null;
+    ResultSet rs = null;
 
-            // Ensure adminID is not empty
-            if (adminId.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Admin ID is missing in lbl_index.");
-                return;
-            }
+    try {
+        // Get the adminID from lbl_index
+        String adminId = lbl_index.getText().trim();
 
-            // Establish database connection
-            conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
-
-            // SQL query to fetch adminName from the Admin table
-            String sql = "SELECT adminName FROM Admin WHERE adminID = ?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, adminId); // Set the adminID as a parameter
-
-            // Execute the query
-            rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                // Retrieve the admin name and set it to lbl_name
-                String adminName = rs.getString("adminName");
-                lbl_name.setText(adminName); // Display the admin name in lbl_name
-            } else {
-                // Display message if admin ID does not exist in the database
-                JOptionPane.showMessageDialog(this, "No admin found with ID: " + adminId);
-                lbl_name.setText(""); // Clear lbl_name
-            }
-        } catch (SQLException ex) {
-            // Handle SQL exceptions
-            JOptionPane.showMessageDialog(this, "Error retrieving admin name: " + ex.getMessage());
-            ex.printStackTrace(); // For debugging purposes
-        } finally {
-            // Close database resources
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error closing database resources: " + ex.getMessage());
-            }
+        // Ensure adminID is not empty
+        if (adminId.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Admin ID is missing in lbl_index.");
+            return;
         }
 
+        // Establish database connection
+        conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
+
+        // Step 1: Retrieve admin name
+        String adminQuery = "SELECT adminName FROM Admin WHERE adminID = ?";
+        pstmt = conn.prepareStatement(adminQuery);
+        pstmt.setString(1, adminId); // Set the adminID as a parameter
+        rs = pstmt.executeQuery();
+
+        if (rs.next()) {
+            // Retrieve the admin name and set it to lbl_name
+            String adminName = rs.getString("adminName");
+            lbl_name.setText(adminName); // Display the admin name in lbl_name
+        } else {
+            // Display message if admin ID does not exist in the database
+            JOptionPane.showMessageDialog(this, "No admin found with ID: " + adminId);
+            lbl_name.setText(""); // Clear lbl_name
+        }
+
+        // Close ResultSet and PreparedStatement for reuse
+        rs.close();
+        pstmt.close();
+
+        // Step 2: Retrieve counts for students, lecturers, and courses
+        stmt = conn.createStatement();
+
+        // Query to get the number of students
+        String studentCountQuery = "SELECT COUNT(*) AS studentCount FROM Student";
+        rs = stmt.executeQuery(studentCountQuery);
+        if (rs.next()) {
+            int studentCount = rs.getInt("studentCount");
+            lbl_studentNo.setText(String.valueOf(studentCount)); // Display the count in lbl_studentNo
+        }
+
+        // Close ResultSet for reuse
+        rs.close();
+
+        // Query to get the number of lecturers
+        String lecturerCountQuery = "SELECT COUNT(*) AS lecturerCount FROM Lecturer";
+        rs = stmt.executeQuery(lecturerCountQuery);
+        if (rs.next()) {
+            int lecturerCount = rs.getInt("lecturerCount");
+            lbl_lecturerNo.setText(String.valueOf(lecturerCount)); // Display the count in lbl_lecturerNo
+        }
+
+        // Close ResultSet for reuse
+        rs.close();
+
+        // Query to get the number of courses
+        String courseCountQuery = "SELECT COUNT(*) AS courseCount FROM Course";
+        rs = stmt.executeQuery(courseCountQuery);
+        if (rs.next()) {
+            int courseCount = rs.getInt("courseCount");
+            lbl_coursesNo.setText(String.valueOf(courseCount)); // Display the count in lbl_coursesNo
+        }
+
+        // Close ResultSet for reuse
+        rs.close();
+
+        // Step 3: Retrieve timetable data and populate the JTable
+        String timetableQuery = "SELECT scheduleDate, scheduleTime, subjectName, courseID, lecturerID FROM Timetable";
+        pstmt = conn.prepareStatement(timetableQuery);
+        rs = pstmt.executeQuery();
+
+        // Get the table model of tbl_timetable
+        DefaultTableModel model = (DefaultTableModel) tbl_timetable.getModel();
+
+        // Clear existing rows in the table
+        model.setRowCount(0);
+
+        // Add columns to the table model (if not already added)
+        model.setColumnIdentifiers(new Object[]{"Schedule Date", "Schedule Time", "Subject Name", "Course ID", "Lecturer ID"});
+
+        // Iterate through the result set and populate the table
+        while (rs.next()) {
+            String scheduleDate = rs.getDate("scheduleDate").toString();
+            String scheduleTime = rs.getTime("scheduleTime").toString();
+            String subjectName = rs.getString("subjectName");
+            String courseID = rs.getString("courseID");
+            String lecturerID = rs.getString("lecturerID");
+
+            // Add a row to the table
+            model.addRow(new Object[]{scheduleDate, scheduleTime, subjectName, courseID, lecturerID});
+        }
+
+    } catch (SQLException ex) {
+        // Handle SQL exceptions
+        JOptionPane.showMessageDialog(this, "Error retrieving data: " + ex.getMessage());
+        ex.printStackTrace(); // For debugging purposes
+    } finally {
+        // Close database resources
+        try {
+            if (rs != null) rs.close();
+            if (pstmt != null) pstmt.close();
+            if (stmt != null) stmt.close();
+            if (conn != null) conn.close();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error closing database resources: " + ex.getMessage());
+        }
+    }
     }
 
     /**
@@ -113,11 +174,18 @@ public class AdminDashboard extends javax.swing.JFrame {
         lbl_user = new javax.swing.JLabel();
         lbl_index = new javax.swing.JLabel();
         lbl_name = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
+        tbl_timetable = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        lbl_studentNo = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+        jLabel4 = new javax.swing.JLabel();
+        lbl_coursesNo = new javax.swing.JLabel();
+        jPanel4 = new javax.swing.JPanel();
+        jLabel6 = new javax.swing.JLabel();
+        lbl_lecturerNo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("AdminDashboard");
@@ -252,44 +320,133 @@ public class AdminDashboard extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tbl_timetable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null},
-                {null},
-                {null},
-                {null},
-                {null},
-                {null},
-                {null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Students"
+                "Date", "Time", "Subject", "Course", "Lecturer"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
-
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null}
-            },
-            new String [] {
-                "Lecture", "Date"
-            }
-        ));
-        jScrollPane2.setViewportView(jTable2);
-        if (jTable2.getColumnModel().getColumnCount() > 0) {
-            jTable2.getColumnModel().getColumn(0).setPreferredWidth(150);
-        }
+        jScrollPane2.setViewportView(tbl_timetable);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(0, 0, 0));
         jLabel1.setText("Admin Dashboard");
+
+        jPanel2.setBackground(new java.awt.Color(102, 102, 102));
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel2.setText("No of Students");
+
+        lbl_studentNo.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        lbl_studentNo.setForeground(new java.awt.Color(255, 255, 255));
+        lbl_studentNo.setText("45");
+        lbl_studentNo.setFocusable(false);
+        lbl_studentNo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap(21, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addGap(15, 15, 15))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(lbl_studentNo, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(34, 34, 34))))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(12, 12, 12)
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lbl_studentNo, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel3.setBackground(new java.awt.Color(102, 102, 102));
+
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel4.setText("No of Courses");
+
+        lbl_coursesNo.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        lbl_coursesNo.setForeground(new java.awt.Color(255, 255, 255));
+        lbl_coursesNo.setText("45");
+        lbl_coursesNo.setFocusable(false);
+        lbl_coursesNo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap(21, Short.MAX_VALUE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addGap(15, 15, 15))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addComponent(lbl_coursesNo, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(34, 34, 34))))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(12, 12, 12)
+                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lbl_coursesNo, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel4.setBackground(new java.awt.Color(102, 102, 102));
+
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel6.setText("No of Lecturers");
+
+        lbl_lecturerNo.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        lbl_lecturerNo.setForeground(new java.awt.Color(255, 255, 255));
+        lbl_lecturerNo.setText("45");
+        lbl_lecturerNo.setFocusable(false);
+        lbl_lecturerNo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap(21, Short.MAX_VALUE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel6)
+                        .addGap(15, 15, 15))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                        .addComponent(lbl_lecturerNo, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(34, 34, 34))))
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(12, 12, 12)
+                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lbl_lecturerNo, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(34, Short.MAX_VALUE))
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -297,28 +454,38 @@ public class AdminDashboard extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 228, Short.MAX_VALUE)
-                        .addComponent(jLabel1)
-                        .addGap(212, 212, 212))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 53, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addGap(215, 215, 215))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(51, 51, 51)
+                                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(38, 38, 38)
+                                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(56, 56, 56))))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(28, 28, 28)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 252, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                        .addGap(34, 34, 34))))
+                        .addGap(10, 10, 10)
+                        .addComponent(jScrollPane2)
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addGap(74, 74, 74)
+                .addGap(31, 31, 31)
                 .addComponent(jLabel1)
-                .addGap(51, 51, 51)
+                .addGap(48, 48, 48)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 341, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                    .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(58, 58, 58)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -408,13 +575,20 @@ public class AdminDashboard extends javax.swing.JFrame {
     private javax.swing.JButton btn_logout;
     private javax.swing.JButton btn_student;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTable jTable2;
+    private javax.swing.JLabel lbl_coursesNo;
     private javax.swing.JLabel lbl_index;
+    private javax.swing.JLabel lbl_lecturerNo;
     private javax.swing.JLabel lbl_name;
+    private javax.swing.JLabel lbl_studentNo;
     private javax.swing.JLabel lbl_user;
+    private javax.swing.JTable tbl_timetable;
     // End of variables declaration//GEN-END:variables
 }
