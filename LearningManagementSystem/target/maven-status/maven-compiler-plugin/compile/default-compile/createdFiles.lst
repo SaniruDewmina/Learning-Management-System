@@ -111,6 +111,7 @@ LoginForms\Student\StudentViewExam$9.class
 LoginForms\Admin\AdminViewStudent$7.class
 LoginForms\Admin\AdminEditLecturer$7.class
 LoginForms\Admin\AdminEditStudent$15.class
+LoginForms\Admin\AdminUpdateTimetable$1.class
 LoginForms\LecturerLogin$2.class
 LoginForms\Admin\AdminDashboard$4.class
 LoginForms\Lecturer\LecturerDashboard.class
@@ -222,6 +223,7 @@ LoginForms\Admin\AdminEditLecturer$6.class
 LoginForms\Admin\AdminViewExam$9.class
 LoginForms\AdminForgotPassword$6.class
 LoginForms\Lecturer\LecturerAddReasult$3.class
+LoginForms\Admin\AdminUpdateTimetable$2.class
 LoginForms\LecturerForgotPassword$3.class
 LoginForms\Admin\AdminEditCourse$7.class
 LoginForms\Admin\AdminViewLecturer$4.class
@@ -250,6 +252,7 @@ LoginForms\Admin\AdminAddStudent.class
 LoginForms\Lecturer\LecturerViewStudent$3.class
 LoginForms\AdminLogin$4.class
 LoginForms\Student\StudentViewCourse$1.class
+LoginForms\Admin\AdminUpdateTimetable$3.class
 LoginForms\Admin\AdminViewLecturer$3.class
 LoginForms\Admin\AdminEditCourse$1.class
 LoginForms\Admin\AdminAddCourse$11.class
@@ -267,14 +270,17 @@ LoginForms\StudentLogin$7.class
 LoginForms\Admin\AdminEditLecturer$1.class
 LoginForms\Lecturer\LecturerViewTimetable$4.class
 LoginForms\Admin\AdminAddLecturer$13.class
+LoginForms\Admin\AdminUpdateTimetable.class
 LoginForms\Admin\AdminAddCourse.class
 LoginForms\Lecturer\LecturerViewExam$1.class
 LoginForms\Lecturer\LecturerAddReasult$1.class
 LoginForms\Admin\AdminAddLecturer.class
+LoginForms\Admin\AdminUpdateTimetable$7.class
 LoginForms\Admin\AdminViewCourse$1.class
 LoginForms\Admin\AdminViewLecturer$2.class
 LoginForms\Student\StudentDashboard$2.class
 LoginForms\Admin\AdminEditCourse$14.class
+LoginForms\Admin\AdminUpdateTimetable$4.class
 LoginForms\AdminForgotPassword$5.class
 LoginForms\Lecturer\LecturerViewCourse$6.class
 LoginForms\Lecturer\LecturerViewStudent.class
@@ -294,12 +300,14 @@ LoginForms\StudentLogin.class
 LoginForms\Admin\AdminViewLecturer$1.class
 LoginForms\AdminLogin$6.class
 LoginForms\Admin\AdminEditLecturer.class
+LoginForms\Admin\AdminDashboard$8.class
 LoginForms\Home$5.class
 LoginForms\Admin\AdminAddStudent$18.class
 LoginForms\AdminForgotPassword$2.class
 LoginForms\Lecturer\LecturerDashboard$7.class
 LoginForms\Admin\AdminAddLecturer$11.class
 LoginForms\Admin\AdminEditStudent$6.class
+LoginForms\Admin\AdminUpdateTimetable$5.class
 LoginForms\Lecturer\LecturerViewTimetable$3.class
 LoginForms\Student\StudentDashboard$5.class
 LoginForms\Lecturer\LecturerViewStudent$7.class
@@ -309,6 +317,7 @@ LoginForms\Admin\AdminEditLecturer$3.class
 LoginForms\AdminLogin$7.class
 LoginForms\Lecturer\LecturerViewStudent$6.class
 LoginForms\Admin\AdminAddLecturer$10.class
+LoginForms\Admin\AdminUpdateTimetable$6.class
 LoginForms\Admin\AdminDashboard.class
 LoginForms\Home$6.class
 LoginForms\Admin\AdminEditStudent$7.class
