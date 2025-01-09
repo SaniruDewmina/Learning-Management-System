@@ -31,58 +31,113 @@ public class AdminUpdateTimetable extends javax.swing.JFrame {
         initComponents();
         this.adminID = adminID;
         lbl_index.setText(adminID);
-            String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
-    String dbUsername = "root"; // Your MySQL username
-    String dbPassword = "";     // Your MySQL password
+String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Database connection details
+String dbUsername = "root";
+String dbPassword = "";
 
-    Connection conn = null;
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
+Connection conn = null;
+PreparedStatement stmtAdmin = null;
+PreparedStatement stmtCourses = null;
+PreparedStatement stmtSubjects = null;
+PreparedStatement stmtLecturers = null;
+ResultSet rsAdmin = null;
+ResultSet rsCourses = null;
+ResultSet rsSubjects = null;
+ResultSet rsLecturers = null;
 
-    try {
-        // Get the admin ID from lbl_index
-        String adminId = lbl_index.getText().trim();
+try {
+    // Get the adminID from lbl_index
+    String adminId = lbl_index.getText().trim();
 
-        // Validate if the admin ID is empty
-        if (adminId.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Admin ID is missing in lbl_index.");
-            return;
-        }
-
-        // Establish database connection
-        conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
-
-        // SQL query to fetch adminName from the Admin table
-        String sql = "SELECT adminName FROM Admin WHERE adminID = ?";
-        stmt = conn.prepareStatement(sql);
-        stmt.setString(1, adminId); // Set the admin ID as a parameter
-
-        // Execute the query
-        rs = stmt.executeQuery();
-
-        if (rs.next()) {
-            // Retrieve the admin name and set it to lbl_name
-            String adminName = rs.getString("adminName");
-            lbl_name.setText(adminName); // Display the admin name in lbl_name
-        } else {
-            // Display message if admin ID does not exist in the database
-            JOptionPane.showMessageDialog(this, "No admin found with ID: " + adminId);
-            lbl_name.setText(""); // Clear lbl_name
-        }
-    } catch (SQLException ex) {
-        // Handle SQL exceptions
-        JOptionPane.showMessageDialog(this, "Error retrieving admin name: " + ex.getMessage());
-        ex.printStackTrace(); // For debugging purposes
-    } finally {
-        // Close database resources
-        try {
-            if (rs != null) rs.close();
-            if (stmt != null) stmt.close();
-            if (conn != null) conn.close();
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error closing database resources: " + ex.getMessage());
-        }
+    if (adminId.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Admin ID is missing in lbl_index.");
+        return;
     }
+
+    // Establish database connection
+    conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
+
+    // Retrieve Admin Name
+    String sqlAdmin = "SELECT adminName FROM Admin WHERE adminID = ?";
+    stmtAdmin = conn.prepareStatement(sqlAdmin);
+    stmtAdmin.setString(1, adminId);
+
+    rsAdmin = stmtAdmin.executeQuery();
+
+    if (rsAdmin.next()) {
+        String adminName = rsAdmin.getString("adminName");
+        lbl_name.setText(adminName);
+    } else {
+        JOptionPane.showMessageDialog(this, "No admin found with ID: " + adminId);
+        lbl_name.setText("Admin Name:");
+        return; // Exit if admin not found
+    }
+
+    // Populate cmb_course with courses
+    String queryCourses = "SELECT DISTINCT courseID FROM Subject";
+    stmtCourses = conn.prepareStatement(queryCourses);
+    rsCourses = stmtCourses.executeQuery();
+
+    cmb_course.removeAllItems(); // Clear existing items
+
+    while (rsCourses.next()) {
+        String courseId = rsCourses.getString("courseID");
+        cmb_course.addItem(courseId); // Add course IDs to combo box
+    }
+
+    // Get the selected course
+    String selectedCourse = (String) cmb_course.getSelectedItem();
+
+    if (selectedCourse == null || selectedCourse.isEmpty()) {
+        cmb_subject.removeAllItems();
+        cmb_lecturer.removeAllItems();
+        return;
+    }
+
+    // Populate cmb_subject with subjects
+    String querySubjects = "SELECT subjectName FROM Subject WHERE courseID = ?";
+    stmtSubjects = conn.prepareStatement(querySubjects);
+    stmtSubjects.setString(1, selectedCourse);
+    rsSubjects = stmtSubjects.executeQuery();
+
+    cmb_subject.removeAllItems(); // Clear existing items
+
+    while (rsSubjects.next()) {
+        String subjectName = rsSubjects.getString("subjectName");
+        cmb_subject.addItem(subjectName); // Add subjects to combo box
+    }
+
+    // Populate cmb_lecturer with lecturers
+    String queryLecturers = "SELECT lecturerID FROM Lecturer";
+    stmtLecturers = conn.prepareStatement(queryLecturers);
+    rsLecturers = stmtLecturers.executeQuery();
+
+    cmb_lecturer.removeAllItems(); // Clear existing items
+
+    while (rsLecturers.next()) {
+        String lecturerId = rsLecturers.getString("lecturerID");
+        cmb_lecturer.addItem(lecturerId); // Add lecturer IDs to combo box
+    }
+} catch (SQLException ex) {
+    JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+    ex.printStackTrace();
+} finally {
+    // Close resources
+    try {
+        if (rsAdmin != null) rsAdmin.close();
+        if (stmtAdmin != null) stmtAdmin.close();
+        if (rsCourses != null) rsCourses.close();
+        if (stmtCourses != null) stmtCourses.close();
+        if (rsSubjects != null) rsSubjects.close();
+        if (stmtSubjects != null) stmtSubjects.close();
+        if (rsLecturers != null) rsLecturers.close();
+        if (stmtLecturers != null) stmtLecturers.close();
+        if (conn != null) conn.close();
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(this, "Error closing resources: " + ex.getMessage());
+    }
+}
+
     }
 
     /**
@@ -104,6 +159,24 @@ public class AdminUpdateTimetable extends javax.swing.JFrame {
         lbl_user = new javax.swing.JLabel();
         lbl_index = new javax.swing.JLabel();
         lbl_name = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
+        jLabel15 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        txt_date = new javax.swing.JTextField();
+        txt_time = new javax.swing.JTextField();
+        cmb_course = new javax.swing.JComboBox<>();
+        cmb_subject = new javax.swing.JComboBox<>();
+        cmb_lecturer = new javax.swing.JComboBox<>();
+        btn_cancel = new javax.swing.JButton();
+        btn_cancel1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -235,17 +308,163 @@ public class AdminUpdateTimetable extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        jLabel14.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        jLabel14.setText("Lecturer");
+
+        jLabel15.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        jLabel15.setText(":");
+
+        jLabel13.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        jLabel13.setText(":");
+
+        jLabel12.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        jLabel12.setText(":");
+
+        jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        jLabel9.setText(":");
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        jLabel2.setText("Date");
+
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        jLabel3.setText("Time");
+
+        jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        jLabel8.setText(":");
+
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        jLabel6.setText("Course ");
+
+        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        jLabel7.setText("Subject");
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel1.setText("Update TimeTable");
+
+        txt_date.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        txt_date.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txt_dateActionPerformed(evt);
+            }
+        });
+
+        txt_time.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        txt_time.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txt_timeActionPerformed(evt);
+            }
+        });
+
+        cmb_course.setBackground(new java.awt.Color(255, 255, 255));
+        cmb_course.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+
+        cmb_subject.setBackground(new java.awt.Color(255, 255, 255));
+        cmb_subject.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+
+        cmb_lecturer.setBackground(new java.awt.Color(255, 255, 255));
+        cmb_lecturer.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+
+        btn_cancel.setBackground(new java.awt.Color(0, 0, 0));
+        btn_cancel.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        btn_cancel.setForeground(new java.awt.Color(255, 255, 255));
+        btn_cancel.setText("Cancel");
+        btn_cancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_cancelActionPerformed(evt);
+            }
+        });
+
+        btn_cancel1.setBackground(new java.awt.Color(0, 0, 0));
+        btn_cancel1.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        btn_cancel1.setForeground(new java.awt.Color(255, 255, 255));
+        btn_cancel1.setText("Add");
+        btn_cancel1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_cancel1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 650, Short.MAX_VALUE))
+                .addGap(121, 121, 121)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel7)
+                    .addComponent(jLabel14)
+                    .addComponent(jLabel6))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 33, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txt_date))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txt_time))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel1)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(cmb_subject, javax.swing.GroupLayout.PREFERRED_SIZE, 289, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(cmb_course, javax.swing.GroupLayout.PREFERRED_SIZE, 289, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(btn_cancel1)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(btn_cancel))
+                                .addComponent(cmb_lecturer, javax.swing.GroupLayout.PREFERRED_SIZE, 289, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addContainerGap(124, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(60, 60, 60)
+                .addComponent(jLabel1)
+                .addGap(84, 84, 84)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel8)
+                    .addComponent(txt_date, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel9)
+                    .addComponent(txt_time, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel12)
+                    .addComponent(jLabel6)
+                    .addComponent(cmb_course, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(jLabel13)
+                    .addComponent(cmb_subject, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel14)
+                    .addComponent(jLabel15)
+                    .addComponent(cmb_lecturer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btn_cancel)
+                    .addComponent(btn_cancel1))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -294,6 +513,25 @@ public class AdminUpdateTimetable extends javax.swing.JFrame {
         this.hide();
     }//GEN-LAST:event_btn_examActionPerformed
 
+    private void txt_dateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_dateActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txt_dateActionPerformed
+
+    private void txt_timeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_timeActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txt_timeActionPerformed
+
+    private void btn_cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cancelActionPerformed
+        // TODO add your handling code here:
+        AdminViewCourse adminViewCourse = new AdminViewCourse(lbl_index.getText());
+        adminViewCourse.setVisible(true);
+        this.hide();
+    }//GEN-LAST:event_btn_cancelActionPerformed
+
+    private void btn_cancel1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cancel1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btn_cancel1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -330,15 +568,33 @@ public class AdminUpdateTimetable extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btn_cancel;
+    private javax.swing.JButton btn_cancel1;
     private javax.swing.JButton btn_course;
     private javax.swing.JButton btn_dashboard;
     private javax.swing.JButton btn_exam;
     private javax.swing.JButton btn_lecturer;
     private javax.swing.JButton btn_logout;
     private javax.swing.JButton btn_student;
+    private javax.swing.JComboBox<String> cmb_course;
+    private javax.swing.JComboBox<String> cmb_lecturer;
+    private javax.swing.JComboBox<String> cmb_subject;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel lbl_index;
     private javax.swing.JLabel lbl_name;
     private javax.swing.JLabel lbl_user;
+    private javax.swing.JTextField txt_date;
+    private javax.swing.JTextField txt_time;
     // End of variables declaration//GEN-END:variables
 }
