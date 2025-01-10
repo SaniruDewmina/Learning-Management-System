@@ -589,8 +589,10 @@ public class AdminViewLecturer extends javax.swing.JFrame {
                 lbl_LecturerContactNo.setText(rs.getString("lecturerContactNo"));
                 lbl_lecturerEmail.setText(rs.getString("lecturerEmail"));
                 lbl_lecturerDob.setText(rs.getString("lecturerDOB"));
+                pnl_lecturerData.setVisible(true);
             } else {
                 JOptionPane.showMessageDialog(this, "No lecturer found with ID: " + lecturerId);
+                txt_searchLecturer.setText("");
             }
 
             rs.close();
@@ -600,8 +602,6 @@ public class AdminViewLecturer extends javax.swing.JFrame {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error retrieving lecturer data.");
         }
-
-        pnl_lecturerData.setVisible(true);
 
     }//GEN-LAST:event_btn_searchActionPerformed
 

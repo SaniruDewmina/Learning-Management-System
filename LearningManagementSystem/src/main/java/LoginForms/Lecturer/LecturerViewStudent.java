@@ -567,8 +567,10 @@ public class LecturerViewStudent extends javax.swing.JFrame {
                 lbl_studentAddress.setText(rs.getString("studentAddress"));
                 lbl_studentContactNo.setText(rs.getString("studentContactNo"));
                 lbl_studentEmail.setText(rs.getString("studentEmail"));
+                pnl_studentData.setVisible(true);
             } else {
                 JOptionPane.showMessageDialog(this, "No student found with ID: " + studentId);
+                txt_searchStudent.setText("");
             }
 
             rs.close();

@@ -112,7 +112,6 @@ public class StudentViewTimetable extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Error closing database resources: " + ex.getMessage());
             }
         }
-
     }
 
     /**

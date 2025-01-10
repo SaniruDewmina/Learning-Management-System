@@ -501,8 +501,10 @@ public class StudentViewCourse extends javax.swing.JFrame {
                 lbl_numberOfStudents.setText(String.valueOf(rs.getInt("numberOfStudents")));
                 lbl_startDate.setText(rs.getString("startDate"));
                 lbl_endDate.setText(rs.getString("endDate"));
+                pnl_courseData.setVisible(true);
             } else {
                 JOptionPane.showMessageDialog(this, "No course found with ID: " + courseId);
+                txt_searchCourse.setText("");
             }
 
             rs.close();

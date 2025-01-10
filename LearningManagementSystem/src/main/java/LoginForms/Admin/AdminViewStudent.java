@@ -631,8 +631,11 @@ public class AdminViewStudent extends javax.swing.JFrame {
                 lbl_studentAddress.setText(rs.getString("studentAddress"));
                 lbl_studentContactNo.setText(rs.getString("studentContactNo"));
                 lbl_studentEmail.setText(rs.getString("studentEmail"));
+                pnl_studentData.setVisible(true);
             } else {
                 JOptionPane.showMessageDialog(this, "No student found with ID: " + studentId);
+                txt_searchStudent.setText("");
+                
             }
 
             // Close resources
@@ -644,7 +647,7 @@ public class AdminViewStudent extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Error retrieving student data.");
         }
 
-        pnl_studentData.setVisible(true);
+       
 
     }//GEN-LAST:event_btn_searchActionPerformed
 

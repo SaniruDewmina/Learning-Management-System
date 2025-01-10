@@ -373,17 +373,19 @@ public class StudentViewExam extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(47, 47, 47)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(47, 47, 47)
+                        .addComponent(pnl_viewResult, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(62, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(txt_searchStudent, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btn_search)
-                        .addGap(101, 101, 101))
-                    .addComponent(pnl_viewResult, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(62, Short.MAX_VALUE))
+                        .addGap(115, 115, 115))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -441,6 +443,7 @@ public class StudentViewExam extends javax.swing.JFrame {
         lbl_studentId.setText("");
         lbl_studentName.setText("");
         lbl_course.setText("");
+        txt_searchStudent.setText("");
         pnl_viewResult.setVisible(false);
     }//GEN-LAST:event_btn_cancelActionPerformed
 
@@ -474,38 +477,51 @@ public class StudentViewExam extends javax.swing.JFrame {
             String queryStudent = "SELECT studentName, courseID FROM Student WHERE studentID = ?";
             stmtStudent = conn.prepareStatement(queryStudent);
             stmtStudent.setString(1, studentID);
+
             rsStudent = stmtStudent.executeQuery();
 
             if (rsStudent.next()) {
                 String studentName = rsStudent.getString("studentName");
                 lbl_studentName.setText(studentName);
+
                 String courseID = rsStudent.getString("courseID");
                 lbl_course.setText(courseID);
             } else {
+                pnl_viewResult.setVisible(false);
+                txt_searchStudent.setText("");
+
                 JOptionPane.showMessageDialog(this, "No student found with Student ID: " + studentID);
+                pnl_viewResult.setVisible(false);
                 return;
             }
 
             String queryResult = "SELECT subjectName, studentMarks, Grade FROM Result WHERE studentID = ?";
             stmt = conn.prepareStatement(queryResult);
             stmt.setString(1, studentID);
+
             rs = stmt.executeQuery();
 
             if (rs.next()) {
                 lbl_studentId.setText(studentID);
 
                 DefaultTableModel tableModel = (DefaultTableModel) tbl_result.getModel();
+
                 tableModel.setRowCount(0);
 
                 do {
                     String subjectName = rs.getString("subjectName");
                     int studentMarks = rs.getInt("studentMarks");
                     String grade = rs.getString("Grade");
+
                     tableModel.addRow(new Object[]{subjectName, studentMarks, grade});
                 } while (rs.next());
+
             } else {
+                pnl_viewResult.setVisible(false);
+                txt_searchStudent.setText("");
                 JOptionPane.showMessageDialog(this, "No results found for Student ID: " + studentID);
                 pnl_viewResult.setVisible(false);
+                txt_searchStudent.setText("");
             }
 
         } catch (SQLException ex) {

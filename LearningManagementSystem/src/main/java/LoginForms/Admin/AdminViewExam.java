@@ -470,6 +470,7 @@ public class AdminViewExam extends javax.swing.JFrame {
         lbl_studentId.setText("");
         lbl_studentName.setText("");
         lbl_course.setText("");
+        txt_searchStudent.setText("");
         pnl_viewResult.setVisible(false);
     }//GEN-LAST:event_btn_cancelActionPerformed
 
@@ -479,8 +480,8 @@ public class AdminViewExam extends javax.swing.JFrame {
 
     private void btn_searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_searchActionPerformed
         // TODO add your handling code here:String studentID = txt_searchStudent.getText().trim();
+        String studentID = txt_searchStudent.getText().trim();
         pnl_viewResult.setVisible(true);
-        String studentID = null;
 
         if (studentID.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Please enter a valid Student ID.");
@@ -513,6 +514,7 @@ public class AdminViewExam extends javax.swing.JFrame {
                 String courseID = rsStudent.getString("courseID");
                 lbl_course.setText(courseID);
             } else {
+
                 JOptionPane.showMessageDialog(this, "No student found with Student ID: " + studentID);
                 return;
             }
@@ -527,6 +529,7 @@ public class AdminViewExam extends javax.swing.JFrame {
                 lbl_studentId.setText(studentID);
 
                 DefaultTableModel tableModel = (DefaultTableModel) tbl_result.getModel();
+
                 tableModel.setRowCount(0);
 
                 do {
