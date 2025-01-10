@@ -533,22 +533,16 @@ public class LecturerAddReasult extends javax.swing.JFrame {
 
             // Determine grade based on marks
             String grade;
-            if (marks >= 80) {
-                grade = "A+";
-            } else if (marks >= 70) {
+            if (marks >= 75) {
                 grade = "A";
             } else if (marks >= 65) {
-                grade = "B+";
-            } else if (marks >= 60) {
                 grade = "B";
             } else if (marks >= 55) {
-                grade = "B-";
-            } else if (marks >= 50) {
-                grade = "C+";
-            } else if (marks >= 45) {
-                grade = "C-";
+                grade = "C";
+            } else if (marks >= 35) {
+                grade = "S";
             } else {
-                grade = "D";
+                grade = "W";
             }
 
             // Establish connection to the database
