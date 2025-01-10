@@ -15,6 +15,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.*;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.view.JasperViewer;
 
 /**
  *
@@ -127,6 +132,7 @@ public class AdminViewCourse extends javax.swing.JFrame {
         txt_searchCourse = new javax.swing.JTextField();
         lbl_Add = new javax.swing.JLabel();
         lbl_Add1 = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -378,7 +384,7 @@ public class AdminViewCourse extends javax.swing.JFrame {
         pnl_courseDataLayout.setVerticalGroup(
             pnl_courseDataLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnl_courseDataLayout.createSequentialGroup()
-                .addGap(20, 20, 20)
+                .addGap(44, 44, 44)
                 .addGroup(pnl_courseDataLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(jLabel8)
@@ -434,6 +440,13 @@ public class AdminViewCourse extends javax.swing.JFrame {
             }
         });
 
+        jLabel16.setIcon(new javax.swing.ImageIcon("C:\\Users\\sanir\\Desktop\\git Repo LMS\\Learning-Management-System\\LearningManagementSystem\\Images\\oui--app-reporting.png")); // NOI18N
+        jLabel16.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel16MouseClicked(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -452,8 +465,11 @@ public class AdminViewCourse extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lbl_Add)
-                            .addComponent(lbl_Add1))
-                        .addGap(84, 84, 84))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lbl_Add1)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel16)))
+                        .addGap(34, 34, 34))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(pnl_courseData, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(44, 44, 44))))
@@ -469,7 +485,8 @@ public class AdminViewCourse extends javax.swing.JFrame {
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(txt_searchCourse, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(btn_search))
-                    .addComponent(lbl_Add1))
+                    .addComponent(lbl_Add1)
+                    .addComponent(jLabel16))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lbl_Add)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -660,6 +677,23 @@ public class AdminViewCourse extends javax.swing.JFrame {
 
     }//GEN-LAST:event_lbl_AddMouseClicked
 
+    private void jLabel16MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel16MouseClicked
+        // TODO add your handling code here:
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/LMS?zeroDateTimeBehavior=CONVERT_TO_NULL", "root", "")) {
+                String reportPath = "C:\\Users\\sanir\\Desktop\\git Repo LMS\\Learning-Management-System\\LearningManagementSystem\\src\\main\\java\\LoginForms\\Admin\\Reports\\CourseSubjects.jrxml";
+                JasperReport jr = JasperCompileManager.compileReport(reportPath);
+                JasperPrint jp = JasperFillManager.fillReport(jr, null, conn);
+                JasperViewer.viewReport(jp);
+            }
+
+        } catch (Exception Ex) {
+            JOptionPane.showMessageDialog(null, Ex);
+            System.out.println(Ex);
+        }
+    }//GEN-LAST:event_jLabel16MouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -710,6 +744,7 @@ public class AdminViewCourse extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel6;

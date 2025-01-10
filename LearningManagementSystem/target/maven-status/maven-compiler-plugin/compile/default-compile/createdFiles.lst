@@ -142,6 +142,7 @@ LoginForms\Lecturer\LecturerAddReasult$6.class
 LoginForms\Admin\AdminAddStudent$12.class
 LoginForms\Admin\AdminUpdateTimetable$10.class
 LoginForms\Admin\AdminAddStudent$6.class
+LoginForms\Admin\AdminViewCourse$14.class
 LoginForms\Admin\AdminViewStudent$5.class
 LoginForms\Student\StudentDashboard.class
 LoginForms\Lecturer\LecturerDashboard$1.class
