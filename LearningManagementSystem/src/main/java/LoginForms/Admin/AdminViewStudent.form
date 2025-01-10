@@ -707,6 +707,9 @@
           <Image iconType="2" name="C:\Users\sanir\Desktop\git Repo LMS\Learning-Management-System\LearningManagementSystem\Images\oui--app-reporting.png"/>
         </Property>
       </Properties>
+      <Events>
+        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jLabel16MouseClicked"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

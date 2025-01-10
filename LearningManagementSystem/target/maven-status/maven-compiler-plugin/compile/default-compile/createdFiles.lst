@@ -126,6 +126,7 @@ LoginForms\Student\StudentViewExam$6.class
 LoginForms\AdminForgotPassword$8.class
 LoginForms\Admin\AdminAddCourse$2.class
 LoginForms\Admin\AdminViewExam$6.class
+LoginForms\Admin\AdminViewStudent$14.class
 LoginForms\Admin\AdminEditLecturer$9.class
 LoginForms\Admin\AdminViewLecturer$13.class
 LoginForms\Admin\AdminEditCourse$3.class
@@ -149,6 +150,7 @@ LoginForms\Admin\AdminAddLecturer$18.class
 LoginForms\Lecturer\LecturerViewExam$11.class
 LoginForms\Admin\AdminViewExam$5.class
 LoginForms\Student\StudentViewCourse$5.class
+LoginForms\Admin\AdminViewLecturer$14.class
 LoginForms\Student\StudentViewExam$7.class
 LoginForms\Admin\AdminAddLecturer$17.class
 LoginForms\Admin\AdminAddCourse$3.class

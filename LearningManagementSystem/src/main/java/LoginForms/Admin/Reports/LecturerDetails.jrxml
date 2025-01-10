@@ -1,0 +1,73 @@
+<!-- Created with Jaspersoft Studio version 7.0.1.final using JasperReports Library version 7.0.1-573496633c2b4074e32f433154b543003f7d2498  -->
+<jasperReport name="LecturerDetails" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" >
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="EAD_DB"/>
+	<query language="SQL"><![CDATA[SELECT  * FROM Lecturer]]></query>
+	<field name="lecturerID" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="lecturerID"/>
+		<property name="com.jaspersoft.studio.field.label" value="lecturerID"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="lecturer"/>
+	</field>
+	<field name="lecturerName" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="lecturerName"/>
+		<property name="com.jaspersoft.studio.field.label" value="lecturerName"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="lecturer"/>
+	</field>
+	<field name="lecturerNIC" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="lecturerNIC"/>
+		<property name="com.jaspersoft.studio.field.label" value="lecturerNIC"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="lecturer"/>
+	</field>
+	<field name="lecturerContactNo" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="lecturerContactNo"/>
+		<property name="com.jaspersoft.studio.field.label" value="lecturerContactNo"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="lecturer"/>
+	</field>
+	<field name="lecturerEmail" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="lecturerEmail"/>
+		<property name="com.jaspersoft.studio.field.label" value="lecturerEmail"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="lecturer"/>
+	</field>
+	<background splitType="Stretch"/>
+	<title height="79" splitType="Stretch"/>
+	<pageHeader height="35" splitType="Stretch"/>
+	<columnHeader height="58" splitType="Stretch">
+		<element kind="staticText" x="-10" y="20" width="100" height="30">
+			<text><![CDATA[Lecturer ID]]></text>
+		</element>
+		<element kind="staticText" x="100" y="20" width="100" height="30">
+			<text><![CDATA[Name]]></text>
+		</element>
+		<element kind="staticText" x="210" y="20" width="100" height="30">
+			<text><![CDATA[NIC]]></text>
+		</element>
+		<element kind="staticText" x="320" y="20" width="100" height="30">
+			<text><![CDATA[Contact NO:]]></text>
+		</element>
+		<element kind="staticText" x="430" y="20" width="100" height="30">
+			<text><![CDATA[Email]]></text>
+		</element>
+	</columnHeader>
+	<detail>
+		<band height="51" splitType="Stretch">
+			<element kind="textField" x="-10" y="10" width="100" height="30">
+				<expression><![CDATA[$F{lecturerID}]]></expression>
+			</element>
+			<element kind="textField"  x="100" y="10" width="100" height="30">
+				<expression><![CDATA[$F{lecturerName}]]></expression>
+			</element>
+			<element kind="textField" x="210" y="10" width="100" height="30">
+				<expression><![CDATA[$F{lecturerNIC}]]></expression>
+			</element>
+			<element kind="textField" x="320" y="12" width="100" height="30">
+				<expression><![CDATA[$F{lecturerContactNo}]]></expression>
+			</element>
+			<element kind="textField" x="430" y="12" width="100" height="30">
+				<expression><![CDATA[$F{lecturerEmail}]]></expression>
+			</element>
+		</band>
+	</detail>
+	<columnFooter height="45" splitType="Stretch"/>
+	<pageFooter height="54" splitType="Stretch"/>
+	<summary height="42" splitType="Stretch"/>
+</jasperReport>

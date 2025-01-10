@@ -15,6 +15,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.*;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.view.JasperViewer;
 
 /**
  *
@@ -489,6 +494,11 @@ public class AdminViewStudent extends javax.swing.JFrame {
         });
 
         jLabel16.setIcon(new javax.swing.ImageIcon("C:\\Users\\sanir\\Desktop\\git Repo LMS\\Learning-Management-System\\LearningManagementSystem\\Images\\oui--app-reporting.png")); // NOI18N
+        jLabel16.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel16MouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -739,6 +749,23 @@ public class AdminViewStudent extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_btn_deletMouseClicked
+
+    private void jLabel16MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel16MouseClicked
+        // TODO add your handling code here:
+         try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/LMS?zeroDateTimeBehavior=CONVERT_TO_NULL", "root", "")) {
+                String reportPath = "C:\\Users\\sanir\\Desktop\\git Repo LMS\\Learning-Management-System\\LearningManagementSystem\\src\\main\\java\\LoginForms\\Admin\\Reports\\StudentDetails.jrxml";
+                JasperReport jr = JasperCompileManager.compileReport(reportPath);
+                JasperPrint jp = JasperFillManager.fillReport(jr, null, conn);
+                JasperViewer.viewReport(jp);
+            }
+
+        } catch (Exception Ex) {
+            JOptionPane.showMessageDialog(null, Ex);
+            System.out.println(Ex);
+        }
+    }//GEN-LAST:event_jLabel16MouseClicked
 
     /**
      * @param args the command line arguments

@@ -159,6 +159,7 @@ public class LecturerAddReasult extends javax.swing.JFrame {
         }
 
     }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -335,7 +336,7 @@ public class LecturerAddReasult extends javax.swing.JFrame {
         jLabel10.setText(":");
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel1.setText("View Exam Results");
+        jLabel1.setText("Add Exam Results");
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
         jLabel5.setText("Subject");
