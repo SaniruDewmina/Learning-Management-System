@@ -489,9 +489,8 @@ public class StudentViewExam extends javax.swing.JFrame {
             } else {
                 pnl_viewResult.setVisible(false);
                 txt_searchStudent.setText("");
-
                 JOptionPane.showMessageDialog(this, "No student found with Student ID: " + studentID);
-                pnl_viewResult.setVisible(false);
+                
                 return;
             }
 
@@ -517,11 +516,9 @@ public class StudentViewExam extends javax.swing.JFrame {
                 } while (rs.next());
 
             } else {
-                pnl_viewResult.setVisible(false);
-                txt_searchStudent.setText("");
                 JOptionPane.showMessageDialog(this, "No results found for Student ID: " + studentID);
                 pnl_viewResult.setVisible(false);
-                txt_searchStudent.setText("");
+               
             }
 
         } catch (SQLException ex) {

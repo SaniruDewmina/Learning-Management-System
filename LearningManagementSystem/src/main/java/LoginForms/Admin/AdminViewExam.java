@@ -514,7 +514,8 @@ public class AdminViewExam extends javax.swing.JFrame {
                 String courseID = rsStudent.getString("courseID");
                 lbl_course.setText(courseID);
             } else {
-
+                pnl_viewResult.setVisible(false);
+                txt_searchStudent.setText("");
                 JOptionPane.showMessageDialog(this, "No student found with Student ID: " + studentID);
                 return;
             }
