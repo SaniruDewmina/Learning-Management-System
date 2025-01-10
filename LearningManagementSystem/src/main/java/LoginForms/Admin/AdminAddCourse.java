@@ -504,14 +504,12 @@ public class AdminAddCourse extends javax.swing.JFrame {
         String startDate = txt_courseStart.getText().trim();
         String endDate = txt_courseEnd.getText().trim();
 
-// Validate fields
         if (courseId.isEmpty() || courseName.isEmpty() || numberOfStudentsStr.isEmpty()
                 || startDate.isEmpty() || endDate.isEmpty()) {
             JOptionPane.showMessageDialog(this, "All fields are required.");
             return;
         }
 
-// Validate number of students
         int numberOfStudents;
         try {
             numberOfStudents = Integer.parseInt(numberOfStudentsStr);
@@ -525,21 +523,17 @@ public class AdminAddCourse extends javax.swing.JFrame {
         }
 
         try {
-            // Establish connection
             Connection conn = DriverManager.getConnection(url, user, password);
 
-            // Insert query
             String query = "INSERT INTO Course (courseID, courseName, numberOfStudents, startDate, endDate) VALUES (?, ?, ?, ?, ?)";
             PreparedStatement stmt = conn.prepareStatement(query);
 
-            // Set parameters
             stmt.setString(1, courseId);
             stmt.setString(2, courseName);
             stmt.setInt(3, numberOfStudents);
             stmt.setString(4, startDate);
             stmt.setString(5, endDate);
 
-            // Execute query
             int rowsInserted = stmt.executeUpdate();
 
             if (rowsInserted > 0) {
