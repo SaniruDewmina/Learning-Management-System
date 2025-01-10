@@ -12,6 +12,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.*;
+
 /**
  *
  * @author sanir
@@ -24,109 +25,96 @@ public class AdminEditStudent extends javax.swing.JFrame {
     /**
      * Creates new form AdminEditStudent
      */
-    public AdminEditStudent(String adminID,String studentId) {
+    public AdminEditStudent(String adminID, String studentId) {
         initComponents();
         this.adminID = adminID;
         lbl_index.setText(adminID);
-        
+
         this.studentId = studentId;
         txt_studentId.setText(studentId);
-        
-        
-        String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
-        String dbUsername = "root"; // Your MySQL username
-        String dbPassword = "";     // Your MySQL password
+
+        String connectionString = "jdbc:mysql://localhost:3306/LMS";
+        String dbUsername = "root";
+        String dbPassword = "";
 
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
         try {
-            // Get the adminID from lbl_index
             String adminId = lbl_index.getText().trim();
 
-            // Ensure adminID is not empty
             if (adminId.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Admin ID is missing in lbl_index.");
                 return;
             }
 
-            // Establish database connection
             conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
 
-            // SQL query to fetch adminName from the Admin table
             String sql = "SELECT adminName FROM Admin WHERE adminID = ?";
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, adminId); // Set the adminID as a parameter
+            stmt.setString(1, adminId);
 
-            // Execute the query
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                // Retrieve the admin name and set it to lbl_name
                 String adminName = rs.getString("adminName");
-                lbl_name.setText(adminName); // Display the admin name in lbl_name
+                lbl_name.setText(adminName);
             } else {
-                // Display message if admin ID does not exist in the database
                 JOptionPane.showMessageDialog(this, "No admin found with ID: " + adminId);
-                lbl_name.setText(""); // Clear lbl_name
+                lbl_name.setText("");
             }
 
-            // Get the studentID from txt_studentId
             String studentID = txt_studentId.getText().trim();
 
-            // Ensure studentID is not empty
             if (studentID.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Student ID is required.");
                 return;
             }
 
-            // SQL query to fetch student details from the Student table
             String studentSql = "SELECT studentName, studentNIC, studentDOB, studentGender, studentAddress, studentContactNo, studentEmail FROM Student WHERE studentID = ?";
             stmt = conn.prepareStatement(studentSql);
-            stmt.setString(1, studentID); // Set the studentID as a parameter
+            stmt.setString(1, studentID);
 
-            // Execute the query for student details
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                // Retrieve the data and set it to the relevant text fields and combo box
                 txt_studentName.setText(rs.getString("studentName"));
                 txt_studentNic.setText(rs.getString("studentNIC"));
-                txt_studentDob.setText(rs.getDate("studentDOB").toString()); // Convert Date to String
-                cmb_gender.setSelectedItem(rs.getString("studentGender")); // Set the gender in the combo box
+                txt_studentDob.setText(rs.getDate("studentDOB").toString());
+                cmb_gender.setSelectedItem(rs.getString("studentGender"));
                 txt_studentAddress.setText(rs.getString("studentAddress"));
                 txt_studentContactNo.setText(rs.getString("studentContactNo"));
                 txt_studentEmail.setText(rs.getString("studentEmail"));
             } else {
-                // Display message if student ID does not exist in the database
                 JOptionPane.showMessageDialog(this, "No student found with ID: " + studentID);
-
-                // Clear the text fields if no student is found
                 txt_studentName.setText("");
                 txt_studentNic.setText("");
                 txt_studentDob.setText("");
-                cmb_gender.setSelectedIndex(-1); // Clear combo box selection
+                cmb_gender.setSelectedIndex(-1);
                 txt_studentAddress.setText("");
                 txt_studentContactNo.setText("");
                 txt_studentEmail.setText("");
             }
         } catch (SQLException ex) {
-            // Handle SQL exceptions
             JOptionPane.showMessageDialog(this, "Error retrieving details: " + ex.getMessage());
-            ex.printStackTrace(); // For debugging purposes
+            ex.printStackTrace();
         } finally {
-            // Close database resources
             try {
-                if (rs != null) rs.close();
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Error closing database resources: " + ex.getMessage());
             }
         }
-        
-        
+
     }
 
     /**
@@ -604,58 +592,50 @@ public class AdminEditStudent extends javax.swing.JFrame {
 
     private void btn_editActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_editActionPerformed
         // TODO add your handling code here:
-                String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
-        String dbUsername = "root"; // Your MySQL username
-        String dbPassword = "";     // Your MySQL password
+        String connectionString = "jdbc:mysql://localhost:3306/LMS";
+        String dbUsername = "root";
+        String dbPassword = "";
 
         Connection conn = null;
         PreparedStatement stmt = null;
 
         try {
-            // Get student details from the text fields
             String studentId = txt_studentId.getText().trim();
             String studentName = txt_studentName.getText().trim();
             String studentNIC = txt_studentNic.getText().trim();
             String studentContactNo = txt_studentContactNo.getText().trim();
             String studentEmail = txt_studentEmail.getText().trim();
-            String studentDOB = txt_studentDob.getText().trim(); // DOB as string
+            String studentDOB = txt_studentDob.getText().trim();
             String studentGender = cmb_gender.getSelectedItem() != null ? cmb_gender.getSelectedItem().toString() : "";
 
-            // Ensure studentID is not empty
             if (studentId.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Student ID is required.");
                 return;
             }
 
-            // Validate DOB format (optional)
-            if (!studentDOB.matches("\\d{4}-\\d{2}-\\d{2}")) { // Regex for YYYY-MM-DD
+            if (!studentDOB.matches("\\d{4}-\\d{2}-\\d{2}")) {
                 JOptionPane.showMessageDialog(null, "Invalid date format for DOB. Use YYYY-MM-DD.");
                 return;
             }
 
-            // Ensure gender is selected
             if (studentGender.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Please select a gender.");
                 return;
             }
 
-            // Establish database connection
             conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
 
-            // SQL query to update student details in the Student table
             String sql = "UPDATE Student SET studentName = ?, studentNIC = ?, studentContactNo = ?, studentEmail = ?, studentDOB = ?, studentGender = ? WHERE studentID = ?";
             stmt = conn.prepareStatement(sql);
 
-            // Set the parameters for the query
             stmt.setString(1, studentName);
             stmt.setString(2, studentNIC);
             stmt.setString(3, studentContactNo);
             stmt.setString(4, studentEmail);
-            stmt.setString(5, studentDOB); // Set DOB as string
+            stmt.setString(5, studentDOB);
             stmt.setString(6, studentGender);
             stmt.setString(7, studentId);
 
-            // Execute the update
             int rowsAffected = stmt.executeUpdate();
 
             if (rowsAffected > 0) {
@@ -665,18 +645,21 @@ public class AdminEditStudent extends javax.swing.JFrame {
             }
 
         } catch (SQLException ex) {
-            // Handle SQL exceptions
             JOptionPane.showMessageDialog(null, "Error updating student details: " + ex.getMessage());
-            ex.printStackTrace(); // For debugging purposes
+            ex.printStackTrace();
         } finally {
-            // Close database resources
             try {
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(null, "Error closing database resources: " + ex.getMessage());
             }
-        }        
+        }
+
     }//GEN-LAST:event_btn_editActionPerformed
 
     private void btn_cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cancelActionPerformed
@@ -691,7 +674,7 @@ public class AdminEditStudent extends javax.swing.JFrame {
         AdminViewStudent adminViewStudent = new AdminViewStudent(lbl_index.getText());
         adminViewStudent.setVisible(true);
         this.hide();
-        
+
     }//GEN-LAST:event_btn_cancelActionPerformed
 
     private void txt_studentIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_studentIdActionPerformed
@@ -752,7 +735,7 @@ public class AdminEditStudent extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new AdminEditStudent("","").setVisible(true);
+                new AdminEditStudent("", "").setVisible(true);
             }
         });
     }

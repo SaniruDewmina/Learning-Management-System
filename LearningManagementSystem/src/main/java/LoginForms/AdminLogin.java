@@ -17,6 +17,7 @@ import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
+
 /**
  *
  * @author sanir
@@ -195,52 +196,39 @@ public class AdminLogin extends javax.swing.JFrame {
     private void CheckBox_showActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CheckBox_showActionPerformed
         // TODO add your handling code here:
         if (CheckBox_show.isSelected()) {
-            // Show password by setting JPasswordField to a JTextField
-            txt_password.setEchoChar((char) 0);  // This removes the password masking
+            txt_password.setEchoChar((char) 0);
         } else {
-            // Hide password by setting the echo character back to the default
-            txt_password.setEchoChar('*');  // This will mask the password with asterisks
+            txt_password.setEchoChar('*'); 
         }
     }//GEN-LAST:event_CheckBox_showActionPerformed
 
     private void btn_loginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_loginActionPerformed
         // TODO add your handling code here:
-        String adminID = txt_adminUsername.getText();  // Assuming the text field is named txt_adminID
+        String adminID = txt_adminUsername.getText();
         String adminPassword = txt_password.getText();
 
-        String connectionString = "jdbc:mysql://localhost:3306/LMS";  // Replace with your database URL
-        String Username = "root";  // Your MySQL username
-        String Password = "";  // Your MySQL password
+        String connectionString = "jdbc:mysql://localhost:3306/LMS";
+        String Username = "root";
+        String Password = "";
 
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
         try {
-            // Establish connection to the database
             conn = DriverManager.getConnection(connectionString, Username, Password);
-
-            // SQL statement to validate admin ID and password
             String sql = "SELECT adminID, adminPassword FROM admin WHERE adminID = ? AND adminPassword = ?";
             stmt = conn.prepareStatement(sql);
-
-            // Set parameters
             stmt.setString(1, adminID);
             stmt.setString(2, adminPassword);
-
-            // Execute query
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                // Admin login successful
                 AdminDashboard adminDashboard = new AdminDashboard(adminID);
                 adminDashboard.setVisible(true);
-                this.setVisible(false);  // Hide login form
+                this.setVisible(false);
             } else {
-                // Invalid admin ID or password
                 JOptionPane.showMessageDialog(this, "Invalid admin ID or password");
-
-                // Clear the input fields
                 txt_adminUsername.setText("");
                 txt_password.setText("");
             }
@@ -248,7 +236,6 @@ public class AdminLogin extends javax.swing.JFrame {
             Logger.getLogger(AdminLogin.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
         } finally {
-            // Ensure resources are closed
             try {
                 if (rs != null) {
                     rs.close();
@@ -262,8 +249,7 @@ public class AdminLogin extends javax.swing.JFrame {
             } catch (SQLException ex) {
                 Logger.getLogger(AdminLogin.class.getName()).log(Level.SEVERE, null, ex);
             }
-}
-
+        }
     }//GEN-LAST:event_btn_loginActionPerformed
 
     /**
@@ -314,4 +300,3 @@ public class AdminLogin extends javax.swing.JFrame {
     private javax.swing.JPasswordField txt_password;
     // End of variables declaration//GEN-END:variables
 }
-

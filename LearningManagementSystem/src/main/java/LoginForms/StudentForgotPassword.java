@@ -6,7 +6,17 @@ package LoginForms;
 
 import LoginForms.*;
 import java.awt.*;
+import java.sql.SQLException;
 import javax.swing.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Logger;
+import javax.swing.*;
+
 /**
  *
  * @author sanir
@@ -33,9 +43,9 @@ public class StudentForgotPassword extends javax.swing.JFrame {
         StudentForgetPasswordImage = new javax.swing.JLabel();
         btn_cancle = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        btn_verify = new javax.swing.JButton();
         txt_secretPin = new javax.swing.JPasswordField();
-        txt_adminUsername = new javax.swing.JTextField();
+        txt_studentUsername = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         pnl_changePassword = new javax.swing.JPanel();
@@ -43,7 +53,7 @@ public class StudentForgotPassword extends javax.swing.JFrame {
         txt_newPassword = new javax.swing.JPasswordField();
         jLabel6 = new javax.swing.JLabel();
         txt_confirmPassword = new javax.swing.JPasswordField();
-        jButton2 = new javax.swing.JButton();
+        btn_save = new javax.swing.JButton();
         CheckBox_showNewPassword = new javax.swing.JCheckBox();
         CheckBox_showConfirmPassword = new javax.swing.JCheckBox();
 
@@ -71,19 +81,19 @@ public class StudentForgotPassword extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel2.setText("Username");
 
-        jButton1.setBackground(new java.awt.Color(0, 0, 0));
-        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(255, 255, 255));
-        jButton1.setText("Verify");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btn_verify.setBackground(new java.awt.Color(0, 0, 0));
+        btn_verify.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        btn_verify.setForeground(new java.awt.Color(255, 255, 255));
+        btn_verify.setText("Verify");
+        btn_verify.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btn_verifyActionPerformed(evt);
             }
         });
 
-        txt_adminUsername.addActionListener(new java.awt.event.ActionListener() {
+        txt_studentUsername.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txt_adminUsernameActionPerformed(evt);
+                txt_studentUsernameActionPerformed(evt);
             }
         });
 
@@ -99,13 +109,13 @@ public class StudentForgotPassword extends javax.swing.JFrame {
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel6.setText("Confirm Password");
 
-        jButton2.setBackground(new java.awt.Color(0, 0, 0));
-        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(255, 255, 255));
-        jButton2.setText("Save");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        btn_save.setBackground(new java.awt.Color(0, 0, 0));
+        btn_save.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        btn_save.setForeground(new java.awt.Color(255, 255, 255));
+        btn_save.setText("Save");
+        btn_save.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                btn_saveActionPerformed(evt);
             }
         });
 
@@ -140,7 +150,7 @@ public class StudentForgotPassword extends javax.swing.JFrame {
                         .addComponent(CheckBox_showNewPassword))
                     .addComponent(jLabel6)
                     .addComponent(jLabel5)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btn_save, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         pnl_changePasswordLayout.setVerticalGroup(
@@ -159,7 +169,7 @@ public class StudentForgotPassword extends javax.swing.JFrame {
                     .addComponent(txt_confirmPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(CheckBox_showConfirmPassword))
                 .addGap(18, 18, 18)
-                .addComponent(jButton2)
+                .addComponent(btn_save)
                 .addContainerGap(83, Short.MAX_VALUE))
         );
 
@@ -177,10 +187,10 @@ public class StudentForgotPassword extends javax.swing.JFrame {
                         .addGap(40, 40, 40)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
-                            .addComponent(txt_adminUsername, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txt_studentUsername, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel3)
                             .addComponent(jLabel4)
-                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btn_verify, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txt_secretPin, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addContainerGap(28, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
@@ -204,13 +214,13 @@ public class StudentForgotPassword extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txt_adminUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txt_studentUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txt_secretPin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jButton1)
+                        .addComponent(btn_verify)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(pnl_changePassword, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
@@ -232,42 +242,133 @@ public class StudentForgotPassword extends javax.swing.JFrame {
         this.hide();
     }//GEN-LAST:event_btn_cancleActionPerformed
 
-    private void txt_adminUsernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_adminUsernameActionPerformed
+    private void txt_studentUsernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_studentUsernameActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txt_adminUsernameActionPerformed
+    }//GEN-LAST:event_txt_studentUsernameActionPerformed
 
     private void CheckBox_showNewPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CheckBox_showNewPasswordActionPerformed
         // TODO add your handling code here:
         if (CheckBox_showNewPassword.isSelected()) {
-            // Show password by setting JPasswordField to a JTextField
-            txt_newPassword.setEchoChar((char) 0);  // This removes the password masking
+            txt_newPassword.setEchoChar((char) 0);
         } else {
-            // Hide password by setting the echo character back to the default
-            txt_newPassword.setEchoChar('*');  // This will mask the password with asterisks
+            txt_newPassword.setEchoChar('*');
         }
     }//GEN-LAST:event_CheckBox_showNewPasswordActionPerformed
 
     private void CheckBox_showConfirmPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CheckBox_showConfirmPasswordActionPerformed
         // TODO add your handling code here:
         if (CheckBox_showConfirmPassword.isSelected()) {
-            // Show password by setting JPasswordField to a JTextField
-            txt_confirmPassword.setEchoChar((char) 0);  // This removes the password masking
+            txt_confirmPassword.setEchoChar((char) 0);
         } else {
-            // Hide password by setting the echo character back to the default
-            txt_confirmPassword.setEchoChar('*');  // This will mask the password with asterisks
+            txt_confirmPassword.setEchoChar('*');
         }
     }//GEN-LAST:event_CheckBox_showConfirmPasswordActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void btn_saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_saveActionPerformed
         // TODO add your handling code here:
-        pnl_changePassword.setVisible(true);
-        
-    }//GEN-LAST:event_jButton2ActionPerformed
+        String newPassword = new String(txt_newPassword.getPassword()).trim();
+        String confirmPassword = new String(txt_confirmPassword.getPassword()).trim();
+        String studentID = txt_studentUsername.getText().trim();
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        if (!newPassword.equals(confirmPassword)) {
+            JOptionPane.showMessageDialog(this, "Passwords do not match. Please try again.");
+            return;
+        }
+
+        String connectionString = "jdbc:mysql://localhost:3306/LMS";
+        String dbUsername = "root";
+        String dbPassword = "";
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+
+        try {
+            if (newPassword.isEmpty() || confirmPassword.isEmpty() || studentID.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "All fields are required. Please fill in all details.");
+                return;
+            }
+
+            conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
+
+            String sql = "UPDATE Student SET studentPassword = ? WHERE studentID = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, newPassword);
+            stmt.setString(2, studentID);
+
+            int rowsUpdated = stmt.executeUpdate();
+            if (rowsUpdated > 0) {
+                JOptionPane.showMessageDialog(this, "Password Reset Successful!");
+                StudentLogin studentLogin = new StudentLogin();
+                studentLogin.setVisible(true);
+                this.setVisible(false);
+            } else {
+                JOptionPane.showMessageDialog(this, "Invalid Student ID or Error resetting password. Please try again.");
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error: Unable to reset password. Please contact support.");
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error Closing Resources: " + ex.getMessage());
+            }
+        }
+    }//GEN-LAST:event_btn_saveActionPerformed
+
+    private void btn_verifyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_verifyActionPerformed
         // TODO add your handling code here:
-        pnl_changePassword.setVisible(true);
-    }//GEN-LAST:event_jButton1ActionPerformed
+        String studentID = txt_studentUsername.getText().trim();
+        String studentPin = txt_secretPin.getText().trim();
+
+        String connectionString = "jdbc:mysql://localhost:3306/LMS";
+        String dbUsername = "root";
+        String dbPassword = "";
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
+
+            String sql = "SELECT studentID FROM Student WHERE studentID = ? AND studentSecretPin = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, studentID);
+            stmt.setString(2, studentPin);
+
+            rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                JOptionPane.showMessageDialog(this, "Verification Successful! You can now reset your password.");
+                pnl_changePassword.setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(this, "Invalid Username or Secret Pin. Please try again.");
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error Closing Resources: " + ex.getMessage());
+            }
+        }
+
+    }//GEN-LAST:event_btn_verifyActionPerformed
 
     /**
      * @param args the command line arguments
@@ -309,17 +410,17 @@ public class StudentForgotPassword extends javax.swing.JFrame {
     private javax.swing.JCheckBox CheckBox_showNewPassword;
     private javax.swing.JLabel StudentForgetPasswordImage;
     private javax.swing.JButton btn_cancle;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton btn_save;
+    private javax.swing.JButton btn_verify;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel pnl_changePassword;
-    private javax.swing.JTextField txt_adminUsername;
     private javax.swing.JPasswordField txt_confirmPassword;
     private javax.swing.JPasswordField txt_newPassword;
     private javax.swing.JPasswordField txt_secretPin;
+    private javax.swing.JTextField txt_studentUsername;
     // End of variables declaration//GEN-END:variables
 }

@@ -32,34 +32,28 @@ public class StudentViewTimetable extends javax.swing.JFrame {
         initComponents();
         this.studentId = studentId;
         lbl_index.setText(studentId);
-        // Database connection details
-               String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
-        String dbUsername = "root"; // Your MySQL username
-        String dbPassword = "";     // Your MySQL password
+        String connectionString = "jdbc:mysql://localhost:3306/LMS";
+        String dbUsername = "root";
+        String dbPassword = "";
 
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
         try {
-            // Get the studentID from lbl_index
             String studentID = lbl_index.getText().trim();
 
-            // Ensure studentID is not empty
             if (studentID.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Student ID is missing in lbl_index.");
                 return;
             }
 
-            // Establish database connection
             conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
 
-            // Step 1: Retrieve student name and courseID
             String studentQuery = "SELECT studentName, courseID FROM Student WHERE studentID = ?";
             stmt = conn.prepareStatement(studentQuery);
-            stmt.setString(1, studentID); // Set the studentID as a parameter
+            stmt.setString(1, studentID);
 
-            // Execute the query to fetch studentName and courseID
             rs = stmt.executeQuery();
 
             String studentName = null;
@@ -68,60 +62,52 @@ public class StudentViewTimetable extends javax.swing.JFrame {
                 studentName = rs.getString("studentName");
                 courseId = rs.getString("courseID");
 
-                // Set the student's name in lbl_name
                 lbl_name.setText(studentName);
             } else {
-                // Display message if student ID does not exist in the database
                 JOptionPane.showMessageDialog(null, "No student found with ID: " + studentID);
-                lbl_name.setText(""); // Clear lbl_name
-                return; // Exit since no valid student was found
+                lbl_name.setText("");
+                return;
             }
 
-            // Close previous resources for re-use
             rs.close();
             stmt.close();
 
-            // Step 2: Retrieve Timetable Details for the Course with Lecturer Name
-            String timetableQuery = "SELECT t.scheduleDate, t.scheduleTime, t.subjectName, l.lecturerName " +
-                                    "FROM Timetable t " +
-                                    "JOIN Lecturer l ON t.lecturerID = l.lecturerID " +
-                                    "WHERE t.courseID = ?";
+            String timetableQuery = "SELECT t.scheduleDate, t.scheduleTime, t.subjectName, l.lecturerName "
+                    + "FROM Timetable t "
+                    + "JOIN Lecturer l ON t.lecturerID = l.lecturerID "
+                    + "WHERE t.courseID = ?";
             stmt = conn.prepareStatement(timetableQuery);
-            stmt.setString(1, courseId); // Set the courseID as a parameter
+            stmt.setString(1, courseId);
 
-            // Execute the query for timetable details
             rs = stmt.executeQuery();
 
-            // Get the table model of tbl_timetable
             DefaultTableModel model = (DefaultTableModel) tbl_timetable.getModel();
-
-            // Clear existing rows in the table
             model.setRowCount(0);
-
-            // Add columns to the table model (if not already added)
             model.setColumnIdentifiers(new Object[]{"Schedule Date", "Schedule Time", "Subject Name", "Lecturer Name"});
 
-            // Iterate through the result set and populate the table
             while (rs.next()) {
                 String scheduleDate = rs.getDate("scheduleDate").toString();
                 String scheduleTime = rs.getTime("scheduleTime").toString();
                 String subjectName = rs.getString("subjectName");
                 String lecturerName = rs.getString("lecturerName");
 
-                // Add a row to the table
                 model.addRow(new Object[]{scheduleDate, scheduleTime, subjectName, lecturerName});
             }
 
         } catch (SQLException ex) {
-            // Handle SQL exceptions
             JOptionPane.showMessageDialog(null, "Error retrieving student details or timetable: " + ex.getMessage());
-            ex.printStackTrace(); // For debugging purposes
+            ex.printStackTrace();
         } finally {
-            // Close database resources
             try {
-                if (rs != null) rs.close();
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(null, "Error closing database resources: " + ex.getMessage());
             }

@@ -34,125 +34,110 @@ public class AdminDashboard extends javax.swing.JFrame {
         this.adminID = adminID;
         lbl_index.setText(adminID);
 
-    String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
-    String dbUsername = "root"; // Your MySQL username
-    String dbPassword = "";     // Your MySQL password
+        String connectionString = "jdbc:mysql://localhost:3306/LMS";
+        String dbUsername = "root";
+        String dbPassword = "";
 
-    Connection conn = null;
-    PreparedStatement pstmt = null;
-    Statement stmt = null;
-    ResultSet rs = null;
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        Statement stmt = null;
+        ResultSet rs = null;
 
-    try {
-        // Get the adminID from lbl_index
-        String adminId = lbl_index.getText().trim();
-
-        // Ensure adminID is not empty
-        if (adminId.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Admin ID is missing in lbl_index.");
-            return;
-        }
-
-        // Establish database connection
-        conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
-
-        // Step 1: Retrieve admin name
-        String adminQuery = "SELECT adminName FROM Admin WHERE adminID = ?";
-        pstmt = conn.prepareStatement(adminQuery);
-        pstmt.setString(1, adminId); // Set the adminID as a parameter
-        rs = pstmt.executeQuery();
-
-        if (rs.next()) {
-            // Retrieve the admin name and set it to lbl_name
-            String adminName = rs.getString("adminName");
-            lbl_name.setText(adminName); // Display the admin name in lbl_name
-        } else {
-            // Display message if admin ID does not exist in the database
-            JOptionPane.showMessageDialog(this, "No admin found with ID: " + adminId);
-            lbl_name.setText(""); // Clear lbl_name
-        }
-
-        // Close ResultSet and PreparedStatement for reuse
-        rs.close();
-        pstmt.close();
-
-        // Step 2: Retrieve counts for students, lecturers, and courses
-        stmt = conn.createStatement();
-
-        // Query to get the number of students
-        String studentCountQuery = "SELECT COUNT(*) AS studentCount FROM Student";
-        rs = stmt.executeQuery(studentCountQuery);
-        if (rs.next()) {
-            int studentCount = rs.getInt("studentCount");
-            lbl_studentNo.setText(String.valueOf(studentCount)); // Display the count in lbl_studentNo
-        }
-
-        // Close ResultSet for reuse
-        rs.close();
-
-        // Query to get the number of lecturers
-        String lecturerCountQuery = "SELECT COUNT(*) AS lecturerCount FROM Lecturer";
-        rs = stmt.executeQuery(lecturerCountQuery);
-        if (rs.next()) {
-            int lecturerCount = rs.getInt("lecturerCount");
-            lbl_lecturerNo.setText(String.valueOf(lecturerCount)); // Display the count in lbl_lecturerNo
-        }
-
-        // Close ResultSet for reuse
-        rs.close();
-
-        // Query to get the number of courses
-        String courseCountQuery = "SELECT COUNT(*) AS courseCount FROM Course";
-        rs = stmt.executeQuery(courseCountQuery);
-        if (rs.next()) {
-            int courseCount = rs.getInt("courseCount");
-            lbl_coursesNo.setText(String.valueOf(courseCount)); // Display the count in lbl_coursesNo
-        }
-
-        // Close ResultSet for reuse
-        rs.close();
-
-        // Step 3: Retrieve timetable data and populate the JTable
-        String timetableQuery = "SELECT scheduleDate, scheduleTime, subjectName, courseID, lecturerID FROM Timetable";
-        pstmt = conn.prepareStatement(timetableQuery);
-        rs = pstmt.executeQuery();
-
-        // Get the table model of tbl_timetable
-        DefaultTableModel model = (DefaultTableModel) tbl_timetable.getModel();
-
-        // Clear existing rows in the table
-        model.setRowCount(0);
-
-        // Add columns to the table model (if not already added)
-        model.setColumnIdentifiers(new Object[]{"Schedule Date", "Schedule Time", "Subject Name", "Course ID", "Lecturer ID"});
-
-        // Iterate through the result set and populate the table
-        while (rs.next()) {
-            String scheduleDate = rs.getDate("scheduleDate").toString();
-            String scheduleTime = rs.getTime("scheduleTime").toString();
-            String subjectName = rs.getString("subjectName");
-            String courseID = rs.getString("courseID");
-            String lecturerID = rs.getString("lecturerID");
-
-            // Add a row to the table
-            model.addRow(new Object[]{scheduleDate, scheduleTime, subjectName, courseID, lecturerID});
-        }
-
-    } catch (SQLException ex) {
-        // Handle SQL exceptions
-        JOptionPane.showMessageDialog(this, "Error retrieving data: " + ex.getMessage());
-        ex.printStackTrace(); // For debugging purposes
-    } finally {
-        // Close database resources
         try {
-            if (rs != null) rs.close();
-            if (pstmt != null) pstmt.close();
-            if (stmt != null) stmt.close();
-            if (conn != null) conn.close();
+            String adminId = lbl_index.getText().trim();
+
+            if (adminId.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Admin ID is missing in lbl_index.");
+                return;
+            }
+
+            conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
+
+            String adminQuery = "SELECT adminName FROM Admin WHERE adminID = ?";
+            pstmt = conn.prepareStatement(adminQuery);
+            pstmt.setString(1, adminId);
+            rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                String adminName = rs.getString("adminName");
+                lbl_name.setText(adminName);
+            } else {
+                JOptionPane.showMessageDialog(this, "No admin found with ID: " + adminId);
+                lbl_name.setText("");
+            }
+
+            rs.close();
+            pstmt.close();
+
+            stmt = conn.createStatement();
+
+            String studentCountQuery = "SELECT COUNT(*) AS studentCount FROM Student";
+            rs = stmt.executeQuery(studentCountQuery);
+            if (rs.next()) {
+                int studentCount = rs.getInt("studentCount");
+                lbl_studentNo.setText(String.valueOf(studentCount));
+            }
+
+            rs.close();
+
+            String lecturerCountQuery = "SELECT COUNT(*) AS lecturerCount FROM Lecturer";
+            rs = stmt.executeQuery(lecturerCountQuery);
+            if (rs.next()) {
+                int lecturerCount = rs.getInt("lecturerCount");
+                lbl_lecturerNo.setText(String.valueOf(lecturerCount));
+            }
+
+            rs.close();
+
+            String courseCountQuery = "SELECT COUNT(*) AS courseCount FROM Course";
+            rs = stmt.executeQuery(courseCountQuery);
+            if (rs.next()) {
+                int courseCount = rs.getInt("courseCount");
+                lbl_coursesNo.setText(String.valueOf(courseCount));
+            }
+
+            rs.close();
+
+            String timetableQuery = "SELECT scheduleDate, scheduleTime, subjectName, courseID, lecturerID FROM Timetable";
+            pstmt = conn.prepareStatement(timetableQuery);
+            rs = pstmt.executeQuery();
+
+            DefaultTableModel model = (DefaultTableModel) tbl_timetable.getModel();
+
+            model.setRowCount(0);
+            model.setColumnIdentifiers(new Object[]{"Schedule Date", "Schedule Time", "Subject Name", "Course ID", "Lecturer ID"});
+
+            while (rs.next()) {
+                String scheduleDate = rs.getDate("scheduleDate").toString();
+                String scheduleTime = rs.getTime("scheduleTime").toString();
+                String subjectName = rs.getString("subjectName");
+                String courseID = rs.getString("courseID");
+                String lecturerID = rs.getString("lecturerID");
+
+                model.addRow(new Object[]{scheduleDate, scheduleTime, subjectName, courseID, lecturerID});
+            }
+
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error closing database resources: " + ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Error retrieving data: " + ex.getMessage());
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error closing database resources: " + ex.getMessage());
+            }
         }
-    }
     }
 
     /**
@@ -563,7 +548,7 @@ public class AdminDashboard extends javax.swing.JFrame {
         AdminUpdateTimetable adminUpdateTimetable = new AdminUpdateTimetable(lbl_index.getText());
         adminUpdateTimetable.setVisible(true);
         this.hide();
-                
+
     }//GEN-LAST:event_lbl_updateTimetableMouseClicked
 
     /**

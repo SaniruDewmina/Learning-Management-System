@@ -15,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.*;
+
 /**
  *
  * @author sanir
@@ -30,51 +31,42 @@ public class AdminAddStudent extends javax.swing.JFrame {
         initComponents();
         this.adminID = adminID;
         lbl_index.setText(adminID);
-        
-        String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
-        String dbUsername = "root"; // Your MySQL username
-        String dbPassword = "";     // Your MySQL password
+
+        String connectionString = "jdbc:mysql://localhost:3306/LMS";
+        String dbUsername = "root";
+        String dbPassword = "";
 
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
         try {
-            // Get the adminID from lbl_index
             String adminId = lbl_index.getText().trim();
 
-            // Ensure adminID is not empty
             if (adminId.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Admin ID is missing in lbl_index.");
                 return;
             }
 
-            // Establish database connection
             conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
 
-            // SQL query to fetch adminName from the Admin table
             String sql = "SELECT adminName FROM Admin WHERE adminID = ?";
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, adminId); // Set the adminID as a parameter
+            stmt.setString(1, adminId);
 
-            // Execute the query
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                // Retrieve the admin name and set it to lbl_name
                 String adminName = rs.getString("adminName");
-                lbl_name.setText(adminName); // Display the admin name in lbl_name
+                lbl_name.setText(adminName);
             } else {
-                // Display message if admin ID does not exist in the database
                 JOptionPane.showMessageDialog(this, "No admin found with ID: " + adminId);
-                lbl_name.setText(""); // Clear lbl_name
+                lbl_name.setText("");
             }
         } catch (SQLException ex) {
-            // Handle SQL exceptions
             JOptionPane.showMessageDialog(this, "Error retrieving admin name: " + ex.getMessage());
-            ex.printStackTrace(); // For debugging purposes
+            ex.printStackTrace();
         } finally {
-            // Close database resources
             try {
                 if (rs != null) {
                     rs.close();
@@ -89,6 +81,7 @@ public class AdminAddStudent extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Error closing database resources: " + ex.getMessage());
             }
         }
+
     }
 
     /**
@@ -685,84 +678,78 @@ public class AdminAddStudent extends javax.swing.JFrame {
 
     private void btn_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addActionPerformed
         // TODO add your handling code here:
-String url = "jdbc:mysql://localhost:3306/LMS"; // Replace with your database URL
-String user = "root"; // MySQL username
-String password = ""; // MySQL password
+        String url = "jdbc:mysql://localhost:3306/LMS";
+        String user = "root";
+        String password = "";
 
-String studentId = txt_studentId.getText().trim();
-String studentName = txt_studentName.getText().trim();
-String studentNic = txt_studentNic.getText().trim();
-String studentDob = txt_studentDob.getText().trim();
-String courseId = txt_studentCourse.getText().trim(); // Correctly use the course ID input
-String studentAddress = txt_studentAddress.getText().trim();
-String studentContactNo = txt_studentContactNo.getText().trim();
-String studentEmail = txt_studentEmail.getText().trim();
-String studentGender = (String) cmb_gender.getSelectedItem(); // Get gender from combo box
-String studentPassword = txt_password.getText();
-String confirmPassword = txt_confirmPassword.getText();
-String studentSecretPin = txt_secretPin.getText();
+        String studentId = txt_studentId.getText().trim();
+        String studentName = txt_studentName.getText().trim();
+        String studentNic = txt_studentNic.getText().trim();
+        String studentDob = txt_studentDob.getText().trim();
+        String courseId = txt_studentCourse.getText().trim();
+        String studentAddress = txt_studentAddress.getText().trim();
+        String studentContactNo = txt_studentContactNo.getText().trim();
+        String studentEmail = txt_studentEmail.getText().trim();
+        String studentGender = (String) cmb_gender.getSelectedItem();
+        String studentPassword = txt_password.getText();
+        String confirmPassword = txt_confirmPassword.getText();
+        String studentSecretPin = txt_secretPin.getText();
 
-// Validate fields
-if (studentId.isEmpty() || studentName.isEmpty() || studentNic.isEmpty() || studentDob.isEmpty() || courseId.isEmpty() ||
-    studentAddress.isEmpty() || studentContactNo.isEmpty() || studentEmail.isEmpty() || 
-    studentPassword.isEmpty() || confirmPassword.isEmpty() || studentSecretPin.isEmpty()) {
-    JOptionPane.showMessageDialog(this, "All fields are required.");
-    return;
-}
+        if (studentId.isEmpty() || studentName.isEmpty() || studentNic.isEmpty() || studentDob.isEmpty() || courseId.isEmpty()
+                || studentAddress.isEmpty() || studentContactNo.isEmpty() || studentEmail.isEmpty()
+                || studentPassword.isEmpty() || confirmPassword.isEmpty() || studentSecretPin.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "All fields are required.");
+            return;
+        }
 
-// Validate password and confirm password match
-if (!studentPassword.equals(confirmPassword)) {
-    JOptionPane.showMessageDialog(this, "Password and Confirm Password do not match.");
-    return;
-}
+        if (!studentPassword.equals(confirmPassword)) {
+            JOptionPane.showMessageDialog(this, "Password and Confirm Password do not match.");
+            return;
+        }
 
-try {
-    // Establish connection
-    Connection conn = DriverManager.getConnection(url, user, password);
+        try {
+            Connection conn = DriverManager.getConnection(url, user, password);
 
-    // Insert query
-    String query = "INSERT INTO Student (studentID, studentName, studentNIC, studentDOB, courseID, studentAddress, studentContactNo, " +
-                   "studentEmail, studentGender, studentPassword, studentSecretPin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String query = "INSERT INTO Student (studentID, studentName, studentNIC, studentDOB, courseID, studentAddress, studentContactNo, "
+                    + "studentEmail, studentGender, studentPassword, studentSecretPin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-    PreparedStatement stmt = conn.prepareStatement(query);
-    stmt.setString(1, studentId);
-    stmt.setString(2, studentName);
-    stmt.setString(3, studentNic);
-    stmt.setString(4, studentDob);
-    stmt.setString(5, courseId); // Set course ID correctly
-    stmt.setString(6, studentAddress);
-    stmt.setString(7, studentContactNo);
-    stmt.setString(8, studentEmail);
-    stmt.setString(9, studentGender); // Set gender
-    stmt.setString(10, studentPassword); // Set password
-    stmt.setString(11, studentSecretPin);
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setString(1, studentId);
+            stmt.setString(2, studentName);
+            stmt.setString(3, studentNic);
+            stmt.setString(4, studentDob);
+            stmt.setString(5, courseId);
+            stmt.setString(6, studentAddress);
+            stmt.setString(7, studentContactNo);
+            stmt.setString(8, studentEmail);
+            stmt.setString(9, studentGender);
+            stmt.setString(10, studentPassword);
+            stmt.setString(11, studentSecretPin);
 
-    int rowsInserted = stmt.executeUpdate();
+            int rowsInserted = stmt.executeUpdate();
 
-    if (rowsInserted > 0) {
-        JOptionPane.showMessageDialog(this, "Student added successfully.");
-        txt_studentId.setText("");
-        txt_studentName.setText("");
-        txt_studentNic.setText("");
-        txt_studentDob.setText("");
-        txt_studentAddress.setText("");
-        txt_studentContactNo.setText("");
-        txt_studentEmail.setText("");
-        cmb_gender.setSelectedIndex(0); // Reset combo box to the first item
-        txt_password.setText("");
-        txt_confirmPassword.setText("");
-        txt_secretPin.setText("");
-        txt_studentCourse.setText("");
-    }
+            if (rowsInserted > 0) {
+                JOptionPane.showMessageDialog(this, "Student added successfully.");
+                txt_studentId.setText("");
+                txt_studentName.setText("");
+                txt_studentNic.setText("");
+                txt_studentDob.setText("");
+                txt_studentAddress.setText("");
+                txt_studentContactNo.setText("");
+                txt_studentEmail.setText("");
+                cmb_gender.setSelectedIndex(0);
+                txt_password.setText("");
+                txt_confirmPassword.setText("");
+                txt_secretPin.setText("");
+                txt_studentCourse.setText("");
+            }
 
-    // Close resources
-    stmt.close();
-    conn.close();
-} catch (SQLException ex) {
-    ex.printStackTrace();
-    JOptionPane.showMessageDialog(this, "Error adding student: " + ex.getMessage());
-}
-     
+            stmt.close();
+            conn.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error adding student: " + ex.getMessage());
+        }
     }//GEN-LAST:event_btn_addActionPerformed
 
     private void btn_cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cancelActionPerformed

@@ -13,6 +13,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 /**
  *
  * @author sanir
@@ -25,81 +26,64 @@ public class AdminEditCourse extends javax.swing.JFrame {
     /**
      * Creates new form AdminEditCourse
      */
-    public AdminEditCourse(String adminID,String courseID) {
+    public AdminEditCourse(String adminID, String courseID) {
         initComponents();
         this.adminID = adminID;
         lbl_index.setText(adminID);
-        
+
         this.courseID = courseID;
         txt_courseId.setText(courseID);
-        
-        String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
-        String dbUsername = "root"; // Your MySQL username
-        String dbPassword = "";     // Your MySQL password
+
+        String connectionString = "jdbc:mysql://localhost:3306/LMS";
+        String dbUsername = "root";
+        String dbPassword = "";
 
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
         try {
-            // Get the adminID from lbl_index
             String adminId = lbl_index.getText().trim();
 
-            // Ensure adminID is not empty
             if (adminId.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Admin ID is missing in lbl_index.");
                 return;
             }
 
-            // Establish database connection
             conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
 
-            // SQL query to fetch adminName from the Admin table
             String sql = "SELECT adminName FROM Admin WHERE adminID = ?";
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, adminId); // Set the adminID as a parameter
-
-            // Execute the query
+            stmt.setString(1, adminId);
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                // Retrieve the admin name and set it to lbl_name
                 String adminName = rs.getString("adminName");
-                lbl_name.setText(adminName); // Display the admin name in lbl_name
+                lbl_name.setText(adminName);
             } else {
-                // Display message if admin ID does not exist in the database
                 JOptionPane.showMessageDialog(this, "No admin found with ID: " + adminId);
-                lbl_name.setText(""); // Clear lbl_name
+                lbl_name.setText("");
             }
 
-            // Get the courseID from txt_courseId
             String courseId = txt_courseId.getText().trim();
 
-            // Ensure courseID is not empty
             if (courseId.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Course ID is required.");
                 return;
             }
 
-            // SQL query to fetch course details from the Course table
             String courseSql = "SELECT courseName, numberOfStudents, startDate, endDate FROM Course WHERE courseID = ?";
             stmt = conn.prepareStatement(courseSql);
-            stmt.setString(1, courseId); // Set the courseID as a parameter
-
-            // Execute the query for course details
+            stmt.setString(1, courseId);
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                // Retrieve the course details and set them to the relevant text fields
                 txt_courseName.setText(rs.getString("courseName"));
                 txt_courseStudentNo.setText(String.valueOf(rs.getInt("numberOfStudents")));
-                txt_courseStart.setText(rs.getDate("startDate").toString()); // Convert Date to String
-                txt_courseEnd.setText(rs.getDate("endDate").toString()); // Convert Date to String
+                txt_courseStart.setText(rs.getDate("startDate").toString());
+                txt_courseEnd.setText(rs.getDate("endDate").toString());
             } else {
-                // Display message if course ID does not exist in the database
                 JOptionPane.showMessageDialog(this, "No course found with ID: " + courseId);
-
-                // Clear the text fields if no course is found
                 txt_courseName.setText("");
                 txt_courseStudentNo.setText("");
                 txt_courseStart.setText("");
@@ -107,15 +91,19 @@ public class AdminEditCourse extends javax.swing.JFrame {
             }
 
         } catch (SQLException ex) {
-            // Handle SQL exceptions
             JOptionPane.showMessageDialog(this, "Error retrieving details: " + ex.getMessage());
-            ex.printStackTrace(); // For debugging purposes
+            ex.printStackTrace();
         } finally {
-            // Close database resources
             try {
-                if (rs != null) rs.close();
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Error closing database resources: " + ex.getMessage());
             }
@@ -532,28 +520,25 @@ public class AdminEditCourse extends javax.swing.JFrame {
 
     private void btn_saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_saveActionPerformed
         // TODO add your handling code here:
-                String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
-        String dbUsername = "root"; // Your MySQL username
-        String dbPassword = "";     // Your MySQL password
+        String connectionString = "jdbc:mysql://localhost:3306/LMS";
+        String dbUsername = "root";
+        String dbPassword = "";
 
         Connection conn = null;
         PreparedStatement stmt = null;
 
         try {
-            // Get course details from the text fields
             String courseId = txt_courseId.getText().trim();
             String courseName = txt_courseName.getText().trim();
             String numberOfStudentsStr = txt_courseStudentNo.getText().trim();
-            String startDate = txt_courseStart.getText().trim(); // Date as string
-            String endDate = txt_courseEnd.getText().trim();     // Date as string
+            String startDate = txt_courseStart.getText().trim();
+            String endDate = txt_courseEnd.getText().trim();
 
-            // Ensure courseID is not empty
             if (courseId.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Course ID is required.");
                 return;
             }
 
-            // Validate number of students
             int numberOfStudents;
             try {
                 numberOfStudents = Integer.parseInt(numberOfStudentsStr);
@@ -566,27 +551,22 @@ public class AdminEditCourse extends javax.swing.JFrame {
                 return;
             }
 
-            // Validate startDate and endDate format (optional)
             if (!startDate.matches("\\d{4}-\\d{2}-\\d{2}") || !endDate.matches("\\d{4}-\\d{2}-\\d{2}")) {
                 JOptionPane.showMessageDialog(null, "Invalid date format. Use YYYY-MM-DD.");
                 return;
             }
 
-            // Establish database connection
             conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
 
-            // SQL query to update course details in the Course table
             String sql = "UPDATE Course SET courseName = ?, numberOfStudents = ?, startDate = ?, endDate = ? WHERE courseID = ?";
             stmt = conn.prepareStatement(sql);
 
-            // Set the parameters for the query
             stmt.setString(1, courseName);
             stmt.setInt(2, numberOfStudents);
             stmt.setString(3, startDate);
             stmt.setString(4, endDate);
             stmt.setString(5, courseId);
 
-            // Execute the update
             int rowsAffected = stmt.executeUpdate();
 
             if (rowsAffected > 0) {
@@ -596,14 +576,16 @@ public class AdminEditCourse extends javax.swing.JFrame {
             }
 
         } catch (SQLException ex) {
-            // Handle SQL exceptions
             JOptionPane.showMessageDialog(null, "Error updating course details: " + ex.getMessage());
-            ex.printStackTrace(); // For debugging purposes
+            ex.printStackTrace();
         } finally {
-            // Close database resources
             try {
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(null, "Error closing database resources: " + ex.getMessage());
             }
@@ -654,7 +636,7 @@ public class AdminEditCourse extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new AdminEditCourse("","").setVisible(true);
+                new AdminEditCourse("", "").setVisible(true);
             }
         });
     }

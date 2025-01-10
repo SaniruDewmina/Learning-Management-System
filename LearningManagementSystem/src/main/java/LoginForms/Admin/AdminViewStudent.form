@@ -45,7 +45,9 @@
                               <Component id="lbl_add" min="-2" pref="32" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace min="-2" pref="95" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Component id="jLabel16" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
                       <Component id="jLabel1" min="-2" pref="227" max="-2" attributes="0"/>
@@ -62,10 +64,13 @@
               <EmptySpace min="-2" pref="44" max="-2" attributes="0"/>
               <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="36" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="txt_searchStudent" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="btn_search" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="lbl_add" alignment="3" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="txt_searchStudent" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="btn_search" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="lbl_add" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Component id="jLabel16" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="btn_delet" min="-2" max="-2" attributes="0"/>
@@ -695,6 +700,13 @@
       <Events>
         <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="btn_deletMouseClicked"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel16">
+      <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="2" name="C:\Users\sanir\Desktop\git Repo LMS\Learning-Management-System\LearningManagementSystem\Images\oui--app-reporting.png"/>
+        </Property>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

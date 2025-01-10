@@ -31,51 +31,41 @@ public class StudentViewCourse extends javax.swing.JFrame {
         this.studentId = studentId;
         lbl_index.setText(studentId);
         pnl_courseData.setVisible(false);
-        // Database connection details
-        String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
-        String dbUsername = "root"; // Your MySQL username
-        String dbPassword = "";     // Your MySQL password
+        String connectionString = "jdbc:mysql://localhost:3306/LMS";
+        String dbUsername = "root";
+        String dbPassword = "";
 
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
         try {
-            // Get the studentId from lbl_index
             String studentID = lbl_index.getText().trim();
 
-            // Ensure studentId is not empty
             if (studentID.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Student ID is missing in lbl_index.");
                 return;
             }
 
-            // Establish database connection
             conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
 
-            // SQL query to fetch studentName from the Student table
             String sql = "SELECT studentName FROM Student WHERE studentID = ?";
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, studentID); // Set the studentId as a parameter
+            stmt.setString(1, studentID);
 
-            // Execute the query
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                // Retrieve the student name and set it to lbl_name
                 String studentName = rs.getString("studentName");
-                lbl_name.setText(studentName); // Display the student name in lbl_name
+                lbl_name.setText(studentName);
             } else {
-                // Display message if student ID does not exist in the database
                 JOptionPane.showMessageDialog(this, "No student found with ID: " + studentID);
-                lbl_name.setText(""); // Clear lbl_name
+                lbl_name.setText("");
             }
         } catch (SQLException ex) {
-            // Handle SQL exceptions
             JOptionPane.showMessageDialog(this, "Error retrieving student name: " + ex.getMessage());
-            ex.printStackTrace(); // For debugging purposes
+            ex.printStackTrace();
         } finally {
-            // Close database resources
             try {
                 if (rs != null) {
                     rs.close();
@@ -486,28 +476,23 @@ public class StudentViewCourse extends javax.swing.JFrame {
 
         String courseId = txt_searchCourse.getText().trim();
 
-        // Validate if the course ID field is empty
         if (courseId.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Please enter a Course ID.");
             return;
         }
 
-        // Validate if the course ID contains only alphanumeric characters
         if (!courseId.matches("[a-zA-Z0-9]+")) {
             JOptionPane.showMessageDialog(this, "Invalid characters in Course ID. Please enter a valid Course ID.");
             return;
         }
 
         try {
-            // Establish connection to the database
             Connection conn = DriverManager.getConnection(url, user, password);
 
-            // Prepare SQL query to fetch course data based on courseID
             String query = "SELECT * FROM Course WHERE courseID = ?";
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setString(1, courseId);
 
-            // Execute the query and process the result
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
@@ -520,7 +505,6 @@ public class StudentViewCourse extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "No course found with ID: " + courseId);
             }
 
-            // Close resources
             rs.close();
             stmt.close();
             conn.close();
@@ -530,6 +514,7 @@ public class StudentViewCourse extends javax.swing.JFrame {
         }
 
         pnl_courseData.setVisible(true);
+
     }//GEN-LAST:event_btn_searchActionPerformed
 
     private void btn_cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cancelActionPerformed

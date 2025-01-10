@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Logger;
 import javax.swing.*;
+
 /**
  *
  * @author sanir
@@ -31,112 +32,122 @@ public class AdminUpdateTimetable extends javax.swing.JFrame {
         initComponents();
         this.adminID = adminID;
         lbl_index.setText(adminID);
-String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Database connection details
-String dbUsername = "root";
-String dbPassword = "";
+        String connectionString = "jdbc:mysql://localhost:3306/LMS";
+        String dbUsername = "root";
+        String dbPassword = "";
 
-Connection conn = null;
-PreparedStatement stmtAdmin = null;
-PreparedStatement stmtCourses = null;
-PreparedStatement stmtSubjects = null;
-PreparedStatement stmtLecturers = null;
-ResultSet rsAdmin = null;
-ResultSet rsCourses = null;
-ResultSet rsSubjects = null;
-ResultSet rsLecturers = null;
+        Connection conn = null;
+        PreparedStatement stmtAdmin = null;
+        PreparedStatement stmtCourses = null;
+        PreparedStatement stmtSubjects = null;
+        PreparedStatement stmtLecturers = null;
+        ResultSet rsAdmin = null;
+        ResultSet rsCourses = null;
+        ResultSet rsSubjects = null;
+        ResultSet rsLecturers = null;
 
-try {
-    // Get the adminID from lbl_index
-    String adminId = lbl_index.getText().trim();
+        try {
+            String adminId = lbl_index.getText().trim();
 
-    if (adminId.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Admin ID is missing in lbl_index.");
-        return;
-    }
+            if (adminId.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Admin ID is missing in lbl_index.");
+                return;
+            }
 
-    // Establish database connection
-    conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
+            conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
 
-    // Retrieve Admin Name
-    String sqlAdmin = "SELECT adminName FROM Admin WHERE adminID = ?";
-    stmtAdmin = conn.prepareStatement(sqlAdmin);
-    stmtAdmin.setString(1, adminId);
+            String sqlAdmin = "SELECT adminName FROM Admin WHERE adminID = ?";
+            stmtAdmin = conn.prepareStatement(sqlAdmin);
+            stmtAdmin.setString(1, adminId);
 
-    rsAdmin = stmtAdmin.executeQuery();
+            rsAdmin = stmtAdmin.executeQuery();
 
-    if (rsAdmin.next()) {
-        String adminName = rsAdmin.getString("adminName");
-        lbl_name.setText(adminName);
-    } else {
-        JOptionPane.showMessageDialog(this, "No admin found with ID: " + adminId);
-        lbl_name.setText("Admin Name:");
-        return; // Exit if admin not found
-    }
+            if (rsAdmin.next()) {
+                String adminName = rsAdmin.getString("adminName");
+                lbl_name.setText(adminName);
+            } else {
+                JOptionPane.showMessageDialog(this, "No admin found with ID: " + adminId);
+                lbl_name.setText("Admin Name:");
+                return;
+            }
 
-    // Populate cmb_course with courses
-    String queryCourses = "SELECT DISTINCT courseID FROM Subject";
-    stmtCourses = conn.prepareStatement(queryCourses);
-    rsCourses = stmtCourses.executeQuery();
+            String queryCourses = "SELECT DISTINCT courseID FROM Subject";
+            stmtCourses = conn.prepareStatement(queryCourses);
+            rsCourses = stmtCourses.executeQuery();
 
-    cmb_course.removeAllItems(); // Clear existing items
+            cmb_course.removeAllItems();
 
-    while (rsCourses.next()) {
-        String courseId = rsCourses.getString("courseID");
-        cmb_course.addItem(courseId); // Add course IDs to combo box
-    }
+            while (rsCourses.next()) {
+                String courseId = rsCourses.getString("courseID");
+                cmb_course.addItem(courseId);
+            }
 
-    // Get the selected course
-    String selectedCourse = (String) cmb_course.getSelectedItem();
+            String selectedCourse = (String) cmb_course.getSelectedItem();
 
-    if (selectedCourse == null || selectedCourse.isEmpty()) {
-        cmb_subject.removeAllItems();
-        cmb_lecturer.removeAllItems();
-        return;
-    }
+            if (selectedCourse == null || selectedCourse.isEmpty()) {
+                cmb_subject.removeAllItems();
+                cmb_lecturer.removeAllItems();
+                return;
+            }
 
-    // Populate cmb_subject with subjects
-    String querySubjects = "SELECT subjectName FROM Subject WHERE courseID = ?";
-    stmtSubjects = conn.prepareStatement(querySubjects);
-    stmtSubjects.setString(1, selectedCourse);
-    rsSubjects = stmtSubjects.executeQuery();
+            String querySubjects = "SELECT subjectName FROM Subject WHERE courseID = ?";
+            stmtSubjects = conn.prepareStatement(querySubjects);
+            stmtSubjects.setString(1, selectedCourse);
+            rsSubjects = stmtSubjects.executeQuery();
 
-    cmb_subject.removeAllItems(); // Clear existing items
+            cmb_subject.removeAllItems();
 
-    while (rsSubjects.next()) {
-        String subjectName = rsSubjects.getString("subjectName");
-        cmb_subject.addItem(subjectName); // Add subjects to combo box
-    }
+            while (rsSubjects.next()) {
+                String subjectName = rsSubjects.getString("subjectName");
+                cmb_subject.addItem(subjectName);
+            }
 
-    // Populate cmb_lecturer with lecturers
-    String queryLecturers = "SELECT lecturerID FROM Lecturer";
-    stmtLecturers = conn.prepareStatement(queryLecturers);
-    rsLecturers = stmtLecturers.executeQuery();
+            String queryLecturers = "SELECT lecturerID FROM Lecturer";
+            stmtLecturers = conn.prepareStatement(queryLecturers);
+            rsLecturers = stmtLecturers.executeQuery();
 
-    cmb_lecturer.removeAllItems(); // Clear existing items
+            cmb_lecturer.removeAllItems();
 
-    while (rsLecturers.next()) {
-        String lecturerId = rsLecturers.getString("lecturerID");
-        cmb_lecturer.addItem(lecturerId); // Add lecturer IDs to combo box
-    }
-} catch (SQLException ex) {
-    JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
-    ex.printStackTrace();
-} finally {
-    // Close resources
-    try {
-        if (rsAdmin != null) rsAdmin.close();
-        if (stmtAdmin != null) stmtAdmin.close();
-        if (rsCourses != null) rsCourses.close();
-        if (stmtCourses != null) stmtCourses.close();
-        if (rsSubjects != null) rsSubjects.close();
-        if (stmtSubjects != null) stmtSubjects.close();
-        if (rsLecturers != null) rsLecturers.close();
-        if (stmtLecturers != null) stmtLecturers.close();
-        if (conn != null) conn.close();
-    } catch (SQLException ex) {
-        JOptionPane.showMessageDialog(this, "Error closing resources: " + ex.getMessage());
-    }
-}
+            while (rsLecturers.next()) {
+                String lecturerId = rsLecturers.getString("lecturerID");
+                cmb_lecturer.addItem(lecturerId);
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (rsAdmin != null) {
+                    rsAdmin.close();
+                }
+                if (stmtAdmin != null) {
+                    stmtAdmin.close();
+                }
+                if (rsCourses != null) {
+                    rsCourses.close();
+                }
+                if (stmtCourses != null) {
+                    stmtCourses.close();
+                }
+                if (rsSubjects != null) {
+                    rsSubjects.close();
+                }
+                if (stmtSubjects != null) {
+                    stmtSubjects.close();
+                }
+                if (rsLecturers != null) {
+                    rsLecturers.close();
+                }
+                if (stmtLecturers != null) {
+                    stmtLecturers.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error closing resources: " + ex.getMessage());
+            }
+        }
 
     }
 
@@ -176,7 +187,7 @@ try {
         cmb_subject = new javax.swing.JComboBox<>();
         cmb_lecturer = new javax.swing.JComboBox<>();
         btn_cancel = new javax.swing.JButton();
-        btn_cancel1 = new javax.swing.JButton();
+        btn_add = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -375,13 +386,13 @@ try {
             }
         });
 
-        btn_cancel1.setBackground(new java.awt.Color(0, 0, 0));
-        btn_cancel1.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
-        btn_cancel1.setForeground(new java.awt.Color(255, 255, 255));
-        btn_cancel1.setText("Add");
-        btn_cancel1.addActionListener(new java.awt.event.ActionListener() {
+        btn_add.setBackground(new java.awt.Color(0, 0, 0));
+        btn_add.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        btn_add.setForeground(new java.awt.Color(255, 255, 255));
+        btn_add.setText("Add");
+        btn_add.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_cancel1ActionPerformed(evt);
+                btn_addActionPerformed(evt);
             }
         });
 
@@ -423,7 +434,7 @@ try {
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(layout.createSequentialGroup()
-                                    .addComponent(btn_cancel1)
+                                    .addComponent(btn_add)
                                     .addGap(18, 18, 18)
                                     .addComponent(btn_cancel))
                                 .addComponent(cmb_lecturer, javax.swing.GroupLayout.PREFERRED_SIZE, 289, javax.swing.GroupLayout.PREFERRED_SIZE)))))
@@ -463,7 +474,7 @@ try {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btn_cancel)
-                    .addComponent(btn_cancel1))
+                    .addComponent(btn_add))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -528,9 +539,65 @@ try {
         this.hide();
     }//GEN-LAST:event_btn_cancelActionPerformed
 
-    private void btn_cancel1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cancel1ActionPerformed
+    private void btn_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_btn_cancel1ActionPerformed
+        String connectionString = "jdbc:mysql://localhost:3306/LMS";
+        String dbUsername = "root";
+        String dbPassword = "";
+
+        Connection conn = null;
+        PreparedStatement stmtInsertTimetable = null;
+
+        try {
+            String scheduleDate = txt_date.getText().trim();
+            String scheduleTime = txt_time.getText().trim();
+            String subjectName = (String) cmb_subject.getSelectedItem();
+            String courseID = (String) cmb_course.getSelectedItem();
+            String lecturerID = (String) cmb_lecturer.getSelectedItem();
+
+            if (scheduleDate.isEmpty() || scheduleTime.isEmpty() || subjectName == null || courseID == null || lecturerID == null) {
+                JOptionPane.showMessageDialog(this, "Please fill in all fields before inserting into the timetable.");
+                return;
+            }
+
+            conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
+
+            String insertQuery = "INSERT INTO Timetable (scheduleDate, scheduleTime, subjectName, courseID, lecturerID) VALUES (?, ?, ?, ?, ?)";
+            stmtInsertTimetable = conn.prepareStatement(insertQuery);
+
+            stmtInsertTimetable.setDate(1, java.sql.Date.valueOf(scheduleDate));
+            stmtInsertTimetable.setTime(2, java.sql.Time.valueOf(scheduleTime));
+            stmtInsertTimetable.setString(3, subjectName);
+            stmtInsertTimetable.setString(4, courseID);
+            stmtInsertTimetable.setString(5, lecturerID);
+
+            int rowsInserted = stmtInsertTimetable.executeUpdate();
+            if (rowsInserted > 0) {
+                JOptionPane.showMessageDialog(this, "Timetable entry added successfully.");
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to add timetable entry.");
+            }
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+            ex.printStackTrace();
+        } catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this, "Invalid date or time format. Use YYYY-MM-DD for date and HH:MM:SS for time.");
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (stmtInsertTimetable != null) {
+                    stmtInsertTimetable.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error closing resources: " + ex.getMessage());
+            }
+        }
+
+    }//GEN-LAST:event_btn_addActionPerformed
 
     /**
      * @param args the command line arguments
@@ -568,8 +635,8 @@ try {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btn_add;
     private javax.swing.JButton btn_cancel;
-    private javax.swing.JButton btn_cancel1;
     private javax.swing.JButton btn_course;
     private javax.swing.JButton btn_dashboard;
     private javax.swing.JButton btn_exam;

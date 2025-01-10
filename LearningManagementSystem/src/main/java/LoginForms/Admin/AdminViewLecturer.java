@@ -33,50 +33,41 @@ public class AdminViewLecturer extends javax.swing.JFrame {
         lbl_index.setText(adminID);
         pnl_lecturerData.setVisible(false);
 
-        String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
-        String dbUsername = "root"; // Your MySQL username
-        String dbPassword = "";     // Your MySQL password
+        String connectionString = "jdbc:mysql://localhost:3306/LMS";
+        String dbUsername = "root";
+        String dbPassword = "";
 
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
         try {
-            // Get the adminID from lbl_index
             String adminId = lbl_index.getText().trim();
 
-            // Ensure adminID is not empty
             if (adminId.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Admin ID is missing in lbl_index.");
                 return;
             }
 
-            // Establish database connection
             conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
 
-            // SQL query to fetch adminName from the Admin table
             String sql = "SELECT adminName FROM Admin WHERE adminID = ?";
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, adminId); // Set the adminID as a parameter
+            stmt.setString(1, adminId);
 
-            // Execute the query
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                // Retrieve the admin name and set it to lbl_name
                 String adminName = rs.getString("adminName");
-                lbl_name.setText(adminName); // Display the admin name in lbl_name
+                lbl_name.setText(adminName);
             } else {
-                // Display message if admin ID does not exist in the database
                 JOptionPane.showMessageDialog(this, "No admin found with ID: " + adminId);
-                lbl_name.setText(""); // Clear lbl_name
+                lbl_name.setText("");
             }
         } catch (SQLException ex) {
-            // Handle SQL exceptions
             JOptionPane.showMessageDialog(this, "Error retrieving admin name: " + ex.getMessage());
-            ex.printStackTrace(); // For debugging purposes
+            ex.printStackTrace();
         } finally {
-            // Close database resources
             try {
                 if (rs != null) {
                     rs.close();
@@ -91,6 +82,7 @@ public class AdminViewLecturer extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Error closing database resources: " + ex.getMessage());
             }
         }
+
     }
 
     /**
@@ -138,6 +130,7 @@ public class AdminViewLecturer extends javax.swing.JFrame {
         jLabel15 = new javax.swing.JLabel();
         lbl_Add = new javax.swing.JLabel();
         lbl_Add1 = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -467,6 +460,8 @@ public class AdminViewLecturer extends javax.swing.JFrame {
             }
         });
 
+        jLabel16.setIcon(new javax.swing.ImageIcon("C:\\Users\\sanir\\Desktop\\git Repo LMS\\Learning-Management-System\\LearningManagementSystem\\Images\\oui--app-reporting.png")); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -487,8 +482,11 @@ public class AdminViewLecturer extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lbl_Add)
-                            .addComponent(lbl_Add1))
-                        .addGap(79, 79, 79))))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lbl_Add1)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel16)))
+                        .addGap(29, 29, 29))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -501,7 +499,8 @@ public class AdminViewLecturer extends javax.swing.JFrame {
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(txt_searchLecturer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(btn_search))
-                    .addComponent(lbl_Add1))
+                    .addComponent(lbl_Add1)
+                    .addComponent(jLabel16))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lbl_Add)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
@@ -564,28 +563,23 @@ public class AdminViewLecturer extends javax.swing.JFrame {
 
         String lecturerId = txt_searchLecturer.getText().trim();
 
-// Validate if the lecturer ID field is empty
         if (lecturerId.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Please enter a Lecturer ID.");
             return;
         }
 
-// Validate if the lecturer ID contains only alphanumeric characters
         if (!lecturerId.matches("[a-zA-Z0-9]+")) {
             JOptionPane.showMessageDialog(this, "Invalid characters in Lecturer ID. Please enter a valid Lecturer ID.");
             return;
         }
 
         try {
-            // Establish connection to the database
             Connection conn = DriverManager.getConnection(url, user, password);
 
-            // Prepare SQL query to fetch lecturer data based on lecturerID
             String query = "SELECT * FROM Lecturer WHERE lecturerID = ?";
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setString(1, lecturerId);
 
-            // Execute the query and process the result
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
@@ -599,7 +593,6 @@ public class AdminViewLecturer extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "No lecturer found with ID: " + lecturerId);
             }
 
-            // Close resources
             rs.close();
             stmt.close();
             conn.close();
@@ -609,6 +602,7 @@ public class AdminViewLecturer extends javax.swing.JFrame {
         }
 
         pnl_lecturerData.setVisible(true);
+
     }//GEN-LAST:event_btn_searchActionPerformed
 
     private void btn_editActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_editActionPerformed
@@ -756,6 +750,7 @@ public class AdminViewLecturer extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;

@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author sanir
@@ -32,51 +33,42 @@ public class AdminViewExam extends javax.swing.JFrame {
         this.adminID = adminID;
         lbl_index.setText(adminID);
         pnl_viewResult.setVisible(false);
-        
-        String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
-        String dbUsername = "root"; // Your MySQL username
-        String dbPassword = "";     // Your MySQL password
+
+        String connectionString = "jdbc:mysql://localhost:3306/LMS";
+        String dbUsername = "root";
+        String dbPassword = "";
 
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
         try {
-            // Get the adminID from lbl_index
             String adminId = lbl_index.getText().trim();
 
-            // Ensure adminID is not empty
             if (adminId.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Admin ID is missing in lbl_index.");
                 return;
             }
 
-            // Establish database connection
             conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
 
-            // SQL query to fetch adminName from the Admin table
             String sql = "SELECT adminName FROM Admin WHERE adminID = ?";
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, adminId); // Set the adminID as a parameter
+            stmt.setString(1, adminId);
 
-            // Execute the query
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                // Retrieve the admin name and set it to lbl_name
                 String adminName = rs.getString("adminName");
-                lbl_name.setText(adminName); // Display the admin name in lbl_name
+                lbl_name.setText(adminName);
             } else {
-                // Display message if admin ID does not exist in the database
                 JOptionPane.showMessageDialog(this, "No admin found with ID: " + adminId);
-                lbl_name.setText(""); // Clear lbl_name
+                lbl_name.setText("");
             }
         } catch (SQLException ex) {
-            // Handle SQL exceptions
             JOptionPane.showMessageDialog(this, "Error retrieving admin name: " + ex.getMessage());
-            ex.printStackTrace(); // For debugging purposes
+            ex.printStackTrace();
         } finally {
-            // Close database resources
             try {
                 if (rs != null) {
                     rs.close();
@@ -91,6 +83,7 @@ public class AdminViewExam extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Error closing database resources: " + ex.getMessage());
             }
         }
+
     }
 
     /**
@@ -485,20 +478,18 @@ public class AdminViewExam extends javax.swing.JFrame {
     }//GEN-LAST:event_txt_searchStudentActionPerformed
 
     private void btn_searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_searchActionPerformed
-        // TODO add your handling code here:// Assuming txt_searchStudent, lbl_studentId, lbl_studentName, lbl_course, and tbl_result are already defined in your GUI
-
-        // Get the student ID from the search field
-        String studentID = txt_searchStudent.getText().trim(); // Get the student ID from the search field
+        // TODO add your handling code here:String studentID = txt_searchStudent.getText().trim();
         pnl_viewResult.setVisible(true);
-        // Validate that studentID is not empty
+        String studentID = null;
+
         if (studentID.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Please enter a valid Student ID.");
             return;
         }
 
-        String url = "jdbc:mysql://localhost:3306/LMS";  // Replace with your database URL
-        String user = "root";  // Your MySQL username
-        String password = "";  // Your MySQL password
+        String url = "jdbc:mysql://localhost:3306/LMS";
+        String user = "root";
+        String password = "";
 
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -507,62 +498,46 @@ public class AdminViewExam extends javax.swing.JFrame {
         ResultSet rsStudent = null;
 
         try {
-            // Establish connection to the database
             conn = DriverManager.getConnection(url, user, password);
 
-            // Query to retrieve student name and courseID from the Student table based on studentID
             String queryStudent = "SELECT studentName, courseID FROM Student WHERE studentID = ?";
             stmtStudent = conn.prepareStatement(queryStudent);
-            stmtStudent.setString(1, studentID);  // Set student ID as a parameter
+            stmtStudent.setString(1, studentID);
 
-            // Execute the query for student name and courseID
             rsStudent = stmtStudent.executeQuery();
 
             if (rsStudent.next()) {
-                // Set student name in the label
                 String studentName = rsStudent.getString("studentName");
-                lbl_studentName.setText(studentName);  // Display student name in the label
+                lbl_studentName.setText(studentName);
 
-                // Set courseID in the label
                 String courseID = rsStudent.getString("courseID");
-                lbl_course.setText(courseID);  // Display course ID in the label
+                lbl_course.setText(courseID);
             } else {
-                // If no student found, show a message
                 JOptionPane.showMessageDialog(this, "No student found with Student ID: " + studentID);
-                return; // Exit the method if no student is found
+                return;
             }
 
-            // SQL query to fetch the student's results from the Result table
             String queryResult = "SELECT subjectName, studentMarks, Grade FROM Result WHERE studentID = ?";
             stmt = conn.prepareStatement(queryResult);
-            stmt.setString(1, studentID);  // Set student ID as a parameter
+            stmt.setString(1, studentID);
 
-            // Execute the query for results
             rs = stmt.executeQuery();
 
-            // If a result is found, display the student ID in the label and populate the table
             if (rs.next()) {
-                // Set student ID in the label
-                lbl_studentId.setText(studentID);  // Display student ID in the label
+                lbl_studentId.setText(studentID);
 
-                // Create a model for the JTable (assuming the table already exists)
                 DefaultTableModel tableModel = (DefaultTableModel) tbl_result.getModel();
-
-                // Clear the table before adding new rows (optional, if you want to reset the table)
                 tableModel.setRowCount(0);
 
-                // Populate the table with data from the result set
                 do {
                     String subjectName = rs.getString("subjectName");
                     int studentMarks = rs.getInt("studentMarks");
                     String grade = rs.getString("Grade");
 
-                    // Add each row to the table model
-                    tableModel.addRow(new Object[] { subjectName, studentMarks, grade });
+                    tableModel.addRow(new Object[]{subjectName, studentMarks, grade});
                 } while (rs.next());
 
             } else {
-                // Display a message if no results are found for the student ID
                 JOptionPane.showMessageDialog(this, "No results found for Student ID: " + studentID);
                 pnl_viewResult.setVisible(false);
             }
@@ -571,7 +546,6 @@ public class AdminViewExam extends javax.swing.JFrame {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error retrieving student results: " + ex.getMessage());
         } finally {
-            // Ensure resources are closed
             try {
                 if (rs != null) {
                     rs.close();
@@ -593,7 +567,6 @@ public class AdminViewExam extends javax.swing.JFrame {
             }
         }
 
-        //pnl_viewResult.setVisible(true);
     }//GEN-LAST:event_btn_searchActionPerformed
 
     /**

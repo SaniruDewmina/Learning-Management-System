@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Logger;
 import javax.swing.*;
+
 /**
  *
  * @author sanir
@@ -198,52 +199,42 @@ public class LecturerLogin extends javax.swing.JFrame {
     private void CheckBox_showActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CheckBox_showActionPerformed
         // TODO add your handling code here:
         if (CheckBox_show.isSelected()) {
-            // Show password by setting JPasswordField to a JTextField
-            txt_password.setEchoChar((char) 0);  // This removes the password masking
+            txt_password.setEchoChar((char) 0);
         } else {
-            // Hide password by setting the echo character back to the default
-            txt_password.setEchoChar('*');  // This will mask the password with asterisks
+            txt_password.setEchoChar('*');
         }
     }//GEN-LAST:event_CheckBox_showActionPerformed
 
     private void btn_loginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_loginActionPerformed
         // TODO add your handling code here:
-        String lecturerID = txt_lecturerUsername.getText();  // Assuming the text field is named txt_lecturerID
+        String lecturerID = txt_lecturerUsername.getText();
         String lecturerPassword = txt_password.getText();
 
-        String connectionString = "jdbc:mysql://localhost:3306/LMS";  // Replace with your database URL
-        String Username = "root";  // Your MySQL username
-        String Password = "";  // Your MySQL password
+        String connectionString = "jdbc:mysql://localhost:3306/LMS";
+        String Username = "root";
+        String Password = "";
 
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
         try {
-            // Establish connection to the database
             conn = DriverManager.getConnection(connectionString, Username, Password);
 
-            // SQL statement to validate lecturer ID and password
             String sql = "SELECT lecturerID, lecturerPassword FROM Lecturer WHERE lecturerID = ? AND lecturerPassword = ?";
             stmt = conn.prepareStatement(sql);
 
-            // Set parameters
             stmt.setString(1, lecturerID);
             stmt.setString(2, lecturerPassword);
 
-            // Execute query
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                // Lecturer login successful
                 LecturerDashboard lecturerDashboard = new LecturerDashboard(lecturerID);
                 lecturerDashboard.setVisible(true);
-                this.setVisible(false);  // Hide login form
+                this.setVisible(false);
             } else {
-                // Invalid lecturer ID or password
                 JOptionPane.showMessageDialog(this, "Invalid lecturer ID or password");
-
-                // Clear the input fields
                 txt_lecturerUsername.setText("");
                 txt_password.setText("");
             }
@@ -251,7 +242,6 @@ public class LecturerLogin extends javax.swing.JFrame {
             Logger.getLogger(LecturerLogin.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
         } finally {
-            // Ensure resources are closed
             try {
                 if (rs != null) {
                     rs.close();

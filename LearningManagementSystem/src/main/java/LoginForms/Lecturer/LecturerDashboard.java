@@ -33,10 +33,9 @@ public class LecturerDashboard extends javax.swing.JFrame {
         this.lecturerID = lecturerID;
         lbl_index.setText(lecturerID);
 
-        // Database connection details
-        String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
-        String dbUsername = "root"; // Your MySQL username
-        String dbPassword = "";     // Your MySQL password
+        String connectionString = "jdbc:mysql://localhost:3306/LMS";
+        String dbUsername = "root";
+        String dbPassword = "";
 
         Connection conn = null;
         PreparedStatement lecturerStmt = null;
@@ -45,66 +44,49 @@ public class LecturerDashboard extends javax.swing.JFrame {
         ResultSet timetableRs = null;
 
         try {
-            // Get the lecturer ID from lbl_index
             String lecturerId = lbl_index.getText().trim();
 
-            // Validate if the lecturer ID is empty
             if (lecturerId.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Lecturer ID is missing in lbl_index.");
                 return;
             }
 
-            // Establish database connection
             conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
 
-            // Step 1: Retrieve lecturer name
             String lecturerQuery = "SELECT lecturerName FROM Lecturer WHERE lecturerID = ?";
             lecturerStmt = conn.prepareStatement(lecturerQuery);
             lecturerStmt.setString(1, lecturerId);
             lecturerRs = lecturerStmt.executeQuery();
 
             if (lecturerRs.next()) {
-                // Retrieve the lecturer name and set it to lbl_name
                 String lecturerName = lecturerRs.getString("lecturerName");
-                lbl_name.setText(lecturerName); // Display the lecturer name in lbl_name
+                lbl_name.setText(lecturerName);
             } else {
-                // Display message if lecturer ID does not exist in the database
                 JOptionPane.showMessageDialog(this, "No lecturer found with ID: " + lecturerId);
-                lbl_name.setText(""); // Clear lbl_name
-                return; // Exit the method as no valid lecturer was found
+                lbl_name.setText("");
+                return;
             }
 
-            // Step 2: Retrieve timetable details for the lecturer ID
             String timetableQuery = "SELECT scheduleDate, subjectName, courseID FROM Timetable WHERE lecturerID = ?";
             timetableStmt = conn.prepareStatement(timetableQuery);
             timetableStmt.setString(1, lecturerId);
             timetableRs = timetableStmt.executeQuery();
 
-            // Get the table model of tbl_timetable
             DefaultTableModel model = (DefaultTableModel) tbl_timetable.getModel();
-
-            // Clear any existing rows in the table
             model.setRowCount(0);
-
-            // Set column headers for the JTable
             model.setColumnIdentifiers(new Object[]{"Schedule Date", "Subject Name", "Course ID"});
 
-            // Populate the JTable with timetable data
             while (timetableRs.next()) {
                 String scheduleDate = timetableRs.getDate("scheduleDate").toString();
                 String subjectName = timetableRs.getString("subjectName");
                 String courseId = timetableRs.getString("courseID");
-
-                // Add a row to the table
                 model.addRow(new Object[]{scheduleDate, subjectName, courseId});
             }
 
         } catch (SQLException ex) {
-            // Display error message and print stack trace
             JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
             ex.printStackTrace();
         } finally {
-            // Close all resources
             try {
                 if (lecturerRs != null) {
                     lecturerRs.close();

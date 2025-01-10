@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author sanir
@@ -31,59 +32,55 @@ public class LecturerViewExam extends javax.swing.JFrame {
         this.lecturerID = lecturerID;
         lbl_index.setText(lecturerID);
         pnl_viewResult.setVisible(false);
-        // Database connection details
-String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
-String dbUsername = "root"; // Your MySQL username
-String dbPassword = "";     // Your MySQL password
+        String connectionString = "jdbc:mysql://localhost:3306/LMS";
+        String dbUsername = "root";
+        String dbPassword = "";
 
-Connection conn = null;
-PreparedStatement stmt = null;
-ResultSet rs = null;
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
 
-try {
-    // Get the lecturerID from lbl_index
-    String lecturerId = lbl_index.getText().trim();
+        try {
+            String lecturerId = lbl_index.getText().trim();
 
-    // Ensure lecturerID is not empty
-    if (lecturerId.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Lecturer ID is missing in lbl_index.");
-        return;
-    }
+            if (lecturerId.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Lecturer ID is missing in lbl_index.");
+                return;
+            }
 
-    // Establish database connection
-    conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
+            conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
 
-    // SQL query to fetch lecturerName from the Lecturer table
-    String sql = "SELECT lecturerName FROM Lecturer WHERE lecturerID = ?";
-    stmt = conn.prepareStatement(sql);
-    stmt.setString(1, lecturerId); // Set the lecturerID as a parameter
+            String sql = "SELECT lecturerName FROM Lecturer WHERE lecturerID = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, lecturerId);
 
-    // Execute the query
-    rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
 
-    if (rs.next()) {
-        // Retrieve the lecturer name and set it to lbl_name
-        String lecturerName = rs.getString("lecturerName");
-        lbl_name.setText(lecturerName); // Display the lecturer name in lbl_name
-    } else {
-        // Display message if lecturer ID does not exist in the database
-        JOptionPane.showMessageDialog(this, "No lecturer found with ID: " + lecturerId);
-        lbl_name.setText(""); // Clear lbl_name
-    }
-} catch (SQLException ex) {
-    // Handle SQL exceptions
-    JOptionPane.showMessageDialog(this, "Error retrieving lecturer name: " + ex.getMessage());
-    ex.printStackTrace(); // For debugging purposes
-} finally {
-    // Close database resources
-    try {
-        if (rs != null) rs.close();
-        if (stmt != null) stmt.close();
-        if (conn != null) conn.close();
-    } catch (SQLException ex) {
-        JOptionPane.showMessageDialog(this, "Error closing database resources: " + ex.getMessage());
-    }
-}
+            if (rs.next()) {
+                String lecturerName = rs.getString("lecturerName");
+                lbl_name.setText(lecturerName);
+            } else {
+                JOptionPane.showMessageDialog(this, "No lecturer found with ID: " + lecturerId);
+                lbl_name.setText("");
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error retrieving lecturer name: " + ex.getMessage());
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error closing database resources: " + ex.getMessage());
+            }
+        }
 
     }
 
@@ -483,112 +480,110 @@ try {
         // TODO add your handling code here:// Assuming txt_searchStudent, lbl_studentId, lbl_studentName, lbl_course, and tbl_result are already defined in your GUI
 
 // Get the student ID from the search field
-String studentID = txt_searchStudent.getText().trim(); // Get the student ID from the search field
-pnl_viewResult.setVisible(true);
+        String studentID = txt_searchStudent.getText().trim(); // Get the student ID from the search field
+        pnl_viewResult.setVisible(true);
 // Validate that studentID is not empty
-if (studentID.isEmpty()) {
-    JOptionPane.showMessageDialog(this, "Please enter a valid Student ID.");
-    return;
-}
-
-String url = "jdbc:mysql://localhost:3306/LMS";  // Replace with your database URL
-String user = "root";  // Your MySQL username
-String password = "";  // Your MySQL password
-
-Connection conn = null;
-PreparedStatement stmt = null;
-ResultSet rs = null;
-PreparedStatement stmtStudent = null;
-ResultSet rsStudent = null;
-
-try {
-    // Establish connection to the database
-    conn = DriverManager.getConnection(url, user, password);
-
-    // Query to retrieve student name and courseID from the Student table based on studentID
-    String queryStudent = "SELECT studentName, courseID FROM Student WHERE studentID = ?";
-    stmtStudent = conn.prepareStatement(queryStudent);
-    stmtStudent.setString(1, studentID);  // Set student ID as a parameter
-
-    // Execute the query for student name and courseID
-    rsStudent = stmtStudent.executeQuery();
-
-    if (rsStudent.next()) {
-        // Set student name in the label
-        String studentName = rsStudent.getString("studentName");
-        lbl_studentName.setText(studentName);  // Display student name in the label
-
-        // Set courseID in the label
-        String courseID = rsStudent.getString("courseID");
-        lbl_course.setText(courseID);  // Display course ID in the label
-    } else {
-        // If no student found, show a message
-        JOptionPane.showMessageDialog(this, "No student found with Student ID: " + studentID);
-        return; // Exit the method if no student is found
-    }
-
-    // SQL query to fetch the student's results from the Result table
-    String queryResult = "SELECT subjectName, studentMarks, Grade FROM Result WHERE studentID = ?";
-    stmt = conn.prepareStatement(queryResult);
-    stmt.setString(1, studentID);  // Set student ID as a parameter
-
-    // Execute the query for results
-    rs = stmt.executeQuery();
-
-    // If a result is found, display the student ID in the label and populate the table
-    if (rs.next()) {
-        // Set student ID in the label
-        lbl_studentId.setText(studentID);  // Display student ID in the label
-
-        // Create a model for the JTable (assuming the table already exists)
-        DefaultTableModel tableModel = (DefaultTableModel) tbl_result.getModel();
-
-        // Clear the table before adding new rows (optional, if you want to reset the table)
-        tableModel.setRowCount(0);
-
-        // Populate the table with data from the result set
-        do {
-            String subjectName = rs.getString("subjectName");
-            int studentMarks = rs.getInt("studentMarks");
-            String grade = rs.getString("Grade");
-
-            // Add each row to the table model
-            tableModel.addRow(new Object[] { subjectName, studentMarks, grade });
-        } while (rs.next());
-
-    } else {
-        // Display a message if no results are found for the student ID
-        JOptionPane.showMessageDialog(this, "No results found for Student ID: " + studentID);
-        pnl_viewResult.setVisible(false);
-    }
-
-} catch (SQLException ex) {
-    ex.printStackTrace();
-    JOptionPane.showMessageDialog(this, "Error retrieving student results: " + ex.getMessage());
-} finally {
-    // Ensure resources are closed
-    try {
-        if (rs != null) {
-            rs.close();
+        if (studentID.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please enter a valid Student ID.");
+            return;
         }
-        if (stmt != null) {
-            stmt.close();
-        }
-        if (rsStudent != null) {
-            rsStudent.close();
-        }
-        if (stmtStudent != null) {
-            stmtStudent.close();
-        }
-        if (conn != null) {
-            conn.close();
-        }
-    } catch (SQLException ex) {
-        ex.printStackTrace();
-    }
-}
 
+        String url = "jdbc:mysql://localhost:3306/LMS";  // Replace with your database URL
+        String user = "root";  // Your MySQL username
+        String password = "";  // Your MySQL password
 
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        PreparedStatement stmtStudent = null;
+        ResultSet rsStudent = null;
+
+        try {
+            // Establish connection to the database
+            conn = DriverManager.getConnection(url, user, password);
+
+            // Query to retrieve student name and courseID from the Student table based on studentID
+            String queryStudent = "SELECT studentName, courseID FROM Student WHERE studentID = ?";
+            stmtStudent = conn.prepareStatement(queryStudent);
+            stmtStudent.setString(1, studentID);  // Set student ID as a parameter
+
+            // Execute the query for student name and courseID
+            rsStudent = stmtStudent.executeQuery();
+
+            if (rsStudent.next()) {
+                // Set student name in the label
+                String studentName = rsStudent.getString("studentName");
+                lbl_studentName.setText(studentName);  // Display student name in the label
+
+                // Set courseID in the label
+                String courseID = rsStudent.getString("courseID");
+                lbl_course.setText(courseID);  // Display course ID in the label
+            } else {
+                // If no student found, show a message
+                JOptionPane.showMessageDialog(this, "No student found with Student ID: " + studentID);
+                return; // Exit the method if no student is found
+            }
+
+            // SQL query to fetch the student's results from the Result table
+            String queryResult = "SELECT subjectName, studentMarks, Grade FROM Result WHERE studentID = ?";
+            stmt = conn.prepareStatement(queryResult);
+            stmt.setString(1, studentID);  // Set student ID as a parameter
+
+            // Execute the query for results
+            rs = stmt.executeQuery();
+
+            // If a result is found, display the student ID in the label and populate the table
+            if (rs.next()) {
+                // Set student ID in the label
+                lbl_studentId.setText(studentID);  // Display student ID in the label
+
+                // Create a model for the JTable (assuming the table already exists)
+                DefaultTableModel tableModel = (DefaultTableModel) tbl_result.getModel();
+
+                // Clear the table before adding new rows (optional, if you want to reset the table)
+                tableModel.setRowCount(0);
+
+                // Populate the table with data from the result set
+                do {
+                    String subjectName = rs.getString("subjectName");
+                    int studentMarks = rs.getInt("studentMarks");
+                    String grade = rs.getString("Grade");
+
+                    // Add each row to the table model
+                    tableModel.addRow(new Object[]{subjectName, studentMarks, grade});
+                } while (rs.next());
+
+            } else {
+                // Display a message if no results are found for the student ID
+                JOptionPane.showMessageDialog(this, "No results found for Student ID: " + studentID);
+                pnl_viewResult.setVisible(false);
+            }
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error retrieving student results: " + ex.getMessage());
+        } finally {
+            // Ensure resources are closed
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (rsStudent != null) {
+                    rsStudent.close();
+                }
+                if (stmtStudent != null) {
+                    stmtStudent.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
 
         //pnl_viewResult.setVisible(true);
     }//GEN-LAST:event_btn_searchActionPerformed

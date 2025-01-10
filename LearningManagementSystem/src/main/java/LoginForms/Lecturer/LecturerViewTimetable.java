@@ -16,6 +16,7 @@ import java.sql.Statement;
 import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author sanir
@@ -31,95 +32,80 @@ public class LecturerViewTimetable extends javax.swing.JFrame {
         initComponents();
         this.lecturerID = lecturerID;
         lbl_index.setText(lecturerID);
-        // Database connection details
-        String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
-        String dbUsername = "root"; // Your MySQL username
-        String dbPassword = "";     // Your MySQL password
+        String connectionString = "jdbc:mysql://localhost:3306/LMS";
+        String dbUsername = "root";
+        String dbPassword = "";
 
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
         try {
-            // Get the lecturerID from lbl_index
             String lecturerId = lbl_index.getText().trim();
 
-            // Ensure lecturerID is not empty
             if (lecturerId.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Lecturer ID is missing in lbl_index.");
                 return;
             }
 
-            // Establish database connection
             conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
 
-            // Step 1: Retrieve Lecturer Name
             String lecturerNameQuery = "SELECT lecturerName FROM Lecturer WHERE lecturerID = ?";
             stmt = conn.prepareStatement(lecturerNameQuery);
-            stmt.setString(1, lecturerId); // Set the lecturerID as a parameter
+            stmt.setString(1, lecturerId);
 
-            // Execute the query
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                // Retrieve the lecturer name and set it to lbl_name
                 String lecturerName = rs.getString("lecturerName");
-                lbl_name.setText(lecturerName); // Display the lecturer name in lbl_name
+                lbl_name.setText(lecturerName);
             } else {
-                // Display message if lecturer ID does not exist in the database
                 JOptionPane.showMessageDialog(null, "No lecturer found with ID: " + lecturerId);
-                lbl_name.setText(""); // Clear lbl_name
-                return; // Exit since there's no valid lecturer
+                lbl_name.setText("");
+                return;
             }
 
-            // Close previous resources for re-use
             rs.close();
             stmt.close();
 
-            // Step 2: Retrieve Timetable Details for the Lecturer
             String timetableQuery = "SELECT scheduleDate, scheduleTime, subjectName, courseID FROM Timetable WHERE lecturerID = ?";
             stmt = conn.prepareStatement(timetableQuery);
-            stmt.setString(1, lecturerId); // Set the lecturerID as a parameter
+            stmt.setString(1, lecturerId);
 
-            // Execute the query for timetable details
             rs = stmt.executeQuery();
 
-            // Get the table model of tbl_timetable
             DefaultTableModel model = (DefaultTableModel) tbl_timetable.getModel();
-
-            // Clear existing rows in the table
             model.setRowCount(0);
-
-            // Add columns to the table model (if not already added)
             model.setColumnIdentifiers(new Object[]{"Schedule Date", "Schedule Time", "Subject Name", "Course ID"});
 
-            // Iterate through the result set and populate the table
             while (rs.next()) {
                 String scheduleDate = rs.getDate("scheduleDate").toString();
                 String scheduleTime = rs.getTime("scheduleTime").toString();
                 String subjectName = rs.getString("subjectName");
                 String courseID = rs.getString("courseID");
 
-                // Add a row to the table
                 model.addRow(new Object[]{scheduleDate, scheduleTime, subjectName, courseID});
             }
 
         } catch (SQLException ex) {
-            // Handle SQL exceptions
             JOptionPane.showMessageDialog(null, "Error retrieving lecturer details or timetable: " + ex.getMessage());
-            ex.printStackTrace(); // For debugging purposes
+            ex.printStackTrace();
         } finally {
-            // Close database resources
             try {
-                if (rs != null) rs.close();
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(null, "Error closing database resources: " + ex.getMessage());
             }
         }
 
-        
     }
 
     /**

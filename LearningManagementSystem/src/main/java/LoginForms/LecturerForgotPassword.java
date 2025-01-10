@@ -236,18 +236,15 @@ public class LecturerForgotPassword extends javax.swing.JFrame {
 
     private void btn_saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_saveActionPerformed
         // TODO add your handling code here:
-        // Get the new password and confirm password inputs
         String newPassword = new String(txt_newPassword.getPassword()).trim();
         String confirmPassword = new String(txt_confirmPassword.getPassword()).trim();
-        String lecturerID = txt_lecturerUsername.getText().trim();  // Use lecturer ID
+        String lecturerID = txt_lecturerUsername.getText().trim();
 
-// Validate that the passwords match
         if (!newPassword.equals(confirmPassword)) {
             JOptionPane.showMessageDialog(this, "Passwords do not match. Please try again.");
             return;
         }
 
-// Database connection details
         String connectionString = "jdbc:mysql://localhost:3306/LMS";
         String dbUsername = "root";
         String dbPassword = "";
@@ -256,36 +253,31 @@ public class LecturerForgotPassword extends javax.swing.JFrame {
         PreparedStatement stmt = null;
 
         try {
-            // Ensure inputs are not empty
             if (newPassword.isEmpty() || confirmPassword.isEmpty() || lecturerID.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "All fields are required. Please fill in all details.");
                 return;
             }
 
-            // Establish database connection
             conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
 
-            // SQL query to update the password
             String sql = "UPDATE Lecturer SET lecturerPassword = ? WHERE lecturerID = ?";
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, newPassword);  // Set the new password
-            stmt.setString(2, lecturerID);   // Set the lecturer ID
+            stmt.setString(1, newPassword);
+            stmt.setString(2, lecturerID);
 
-            // Execute the update query
             int rowsUpdated = stmt.executeUpdate();
             if (rowsUpdated > 0) {
                 JOptionPane.showMessageDialog(this, "Password Reset Successful!");
                 LecturerLogin lecturerLogin = new LecturerLogin();
                 lecturerLogin.setVisible(true);
-                this.setVisible(false); // Close the forgot password form
+                this.setVisible(false);
             } else {
                 JOptionPane.showMessageDialog(this, "Invalid Lecturer ID or Error resetting password. Please try again.");
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Error: Unable to reset password. Please contact support.");
-            ex.printStackTrace();  // For debugging purposes
+            ex.printStackTrace();
         } finally {
-            // Ensure resources are closed
             try {
                 if (stmt != null) {
                     stmt.close();
@@ -304,22 +296,18 @@ public class LecturerForgotPassword extends javax.swing.JFrame {
     private void CheckBox_showNewPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CheckBox_showNewPasswordActionPerformed
         // TODO add your handling code here:
         if (CheckBox_showNewPassword.isSelected()) {
-            // Show password by setting JPasswordField to a JTextField
-            txt_newPassword.setEchoChar((char) 0);  // This removes the password masking
+            txt_newPassword.setEchoChar((char) 0);
         } else {
-            // Hide password by setting the echo character back to the default
-            txt_newPassword.setEchoChar('*');  // This will mask the password with asterisks
+            txt_newPassword.setEchoChar('*');
         }
     }//GEN-LAST:event_CheckBox_showNewPasswordActionPerformed
 
     private void CheckBox_showConfirmPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CheckBox_showConfirmPasswordActionPerformed
         // TODO add your handling code here:
         if (CheckBox_showConfirmPassword.isSelected()) {
-            // Show password by setting JPasswordField to a JTextField
-            txt_confirmPassword.setEchoChar((char) 0);  // This removes the password masking
+            txt_confirmPassword.setEchoChar((char) 0);
         } else {
-            // Hide password by setting the echo character back to the default
-            txt_confirmPassword.setEchoChar('*');  // This will mask the password with asterisks
+            txt_confirmPassword.setEchoChar('*');
         }
     }//GEN-LAST:event_CheckBox_showConfirmPasswordActionPerformed
 
@@ -337,10 +325,9 @@ public class LecturerForgotPassword extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        String lecturerID = txt_lecturerUsername.getText().trim();  // Get lecturer username from text field
-        String lecturerPin = txt_secretPin.getText().trim();  // Get lecturer NIC from text field
+        String lecturerID = txt_lecturerUsername.getText().trim();
+        String lecturerPin = txt_secretPin.getText().trim();
 
-// Database connection details
         String connectionString = "jdbc:mysql://localhost:3306/LMS";
         String dbUsername = "root";
         String dbPassword = "";
@@ -350,36 +337,24 @@ public class LecturerForgotPassword extends javax.swing.JFrame {
         ResultSet rs = null;
 
         try {
-            // Establish database connection
             conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
 
-            // SQL query to verify lecturerUsername and lecturerNIC
             String sql = "SELECT lecturerID FROM Lecturer WHERE lecturerID = ? AND lecturerSecretPin = ?";
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, lecturerID);  // Set the lecturerUsername parameter
-            stmt.setString(2, lecturerPin);  // Set the lecturerNIC parameter
+            stmt.setString(1, lecturerID);
+            stmt.setString(2, lecturerPin);
 
-            // Execute the query
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                // Verification successful
                 JOptionPane.showMessageDialog(this, "Verification Successful! You can now reset your password.");
                 pnl_changePassword.setVisible(true);
-
-                // Enable the reset password fields and button
-//        txt_newPassword.setEnabled(true);
-//        txt_confirmPassword.setEnabled(true);
-//        btn_Reset.setEnabled(true);
             } else {
-                // Display message if verification fails
                 JOptionPane.showMessageDialog(this, "Invalid Username or Secret Pin. Please try again.");
             }
         } catch (SQLException ex) {
-            // Display error message if there's an exception
             JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
         } finally {
-            // Ensure resources are closed
             try {
                 if (rs != null) {
                     rs.close();
@@ -395,7 +370,6 @@ public class LecturerForgotPassword extends javax.swing.JFrame {
             }
         }
 
-// Make the reset password panel visible
 
     }//GEN-LAST:event_jButton1ActionPerformed
 

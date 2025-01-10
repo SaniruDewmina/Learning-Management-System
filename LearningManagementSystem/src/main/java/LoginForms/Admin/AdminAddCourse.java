@@ -15,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.*;
+
 /**
  *
  * @author sanir
@@ -30,51 +31,42 @@ public class AdminAddCourse extends javax.swing.JFrame {
         initComponents();
         this.adminID = adminID;
         lbl_index.setText(adminID);
-        
-        String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
-        String dbUsername = "root"; // Your MySQL username
-        String dbPassword = "";     // Your MySQL password
+
+        String connectionString = "jdbc:mysql://localhost:3306/LMS";
+        String dbUsername = "root";
+        String dbPassword = "";
 
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
         try {
-            // Get the adminID from lbl_index
             String adminId = lbl_index.getText().trim();
 
-            // Ensure adminID is not empty
             if (adminId.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Admin ID is missing in lbl_index.");
                 return;
             }
 
-            // Establish database connection
             conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
 
-            // SQL query to fetch adminName from the Admin table
             String sql = "SELECT adminName FROM Admin WHERE adminID = ?";
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, adminId); // Set the adminID as a parameter
+            stmt.setString(1, adminId);
 
-            // Execute the query
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                // Retrieve the admin name and set it to lbl_name
                 String adminName = rs.getString("adminName");
-                lbl_name.setText(adminName); // Display the admin name in lbl_name
+                lbl_name.setText(adminName);
             } else {
-                // Display message if admin ID does not exist in the database
                 JOptionPane.showMessageDialog(this, "No admin found with ID: " + adminId);
-                lbl_name.setText(""); // Clear lbl_name
+                lbl_name.setText("");
             }
         } catch (SQLException ex) {
-            // Handle SQL exceptions
             JOptionPane.showMessageDialog(this, "Error retrieving admin name: " + ex.getMessage());
-            ex.printStackTrace(); // For debugging purposes
+            ex.printStackTrace();
         } finally {
-            // Close database resources
             try {
                 if (rs != null) {
                     rs.close();
@@ -502,9 +494,9 @@ public class AdminAddCourse extends javax.swing.JFrame {
 
     private void btn_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addActionPerformed
         // TODO add your handling code here:
-        String url = "jdbc:mysql://localhost:3306/LMS"; // Replace with your database URL
-        String user = "root"; // MySQL username
-        String password = ""; // MySQL password
+        String url = "jdbc:mysql://localhost:3306/LMS";
+        String user = "root";
+        String password = "";
 
         String courseId = txt_courseId.getText().trim();
         String courseName = txt_courseName.getText().trim();
@@ -538,14 +530,16 @@ public class AdminAddCourse extends javax.swing.JFrame {
 
             // Insert query
             String query = "INSERT INTO Course (courseID, courseName, numberOfStudents, startDate, endDate) VALUES (?, ?, ?, ?, ?)";
-
             PreparedStatement stmt = conn.prepareStatement(query);
+
+            // Set parameters
             stmt.setString(1, courseId);
             stmt.setString(2, courseName);
             stmt.setInt(3, numberOfStudents);
             stmt.setString(4, startDate);
             stmt.setString(5, endDate);
 
+            // Execute query
             int rowsInserted = stmt.executeUpdate();
 
             if (rowsInserted > 0) {
@@ -564,6 +558,7 @@ public class AdminAddCourse extends javax.swing.JFrame {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error adding course.");
         }
+
 
     }//GEN-LAST:event_btn_addActionPerformed
 

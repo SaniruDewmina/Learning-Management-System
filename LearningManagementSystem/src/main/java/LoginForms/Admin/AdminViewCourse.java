@@ -33,50 +33,41 @@ public class AdminViewCourse extends javax.swing.JFrame {
         lbl_index.setText(adminID);
         pnl_courseData.setVisible(false);
 
-        String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
-        String dbUsername = "root"; // Your MySQL username
-        String dbPassword = "";     // Your MySQL password
+        String connectionString = "jdbc:mysql://localhost:3306/LMS";
+        String dbUsername = "root";
+        String dbPassword = "";
 
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
         try {
-            // Get the adminID from lbl_index
             String adminId = lbl_index.getText().trim();
 
-            // Ensure adminID is not empty
             if (adminId.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Admin ID is missing in lbl_index.");
                 return;
             }
 
-            // Establish database connection
             conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
 
-            // SQL query to fetch adminName from the Admin table
             String sql = "SELECT adminName FROM Admin WHERE adminID = ?";
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, adminId); // Set the adminID as a parameter
+            stmt.setString(1, adminId);
 
-            // Execute the query
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                // Retrieve the admin name and set it to lbl_name
                 String adminName = rs.getString("adminName");
-                lbl_name.setText(adminName); // Display the admin name in lbl_name
+                lbl_name.setText(adminName);
             } else {
-                // Display message if admin ID does not exist in the database
                 JOptionPane.showMessageDialog(this, "No admin found with ID: " + adminId);
-                lbl_name.setText(""); // Clear lbl_name
+                lbl_name.setText("");
             }
         } catch (SQLException ex) {
-            // Handle SQL exceptions
             JOptionPane.showMessageDialog(this, "Error retrieving admin name: " + ex.getMessage());
-            ex.printStackTrace(); // For debugging purposes
+            ex.printStackTrace();
         } finally {
-            // Close database resources
             try {
                 if (rs != null) {
                     rs.close();
@@ -91,6 +82,7 @@ public class AdminViewCourse extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Error closing database resources: " + ex.getMessage());
             }
         }
+
     }
 
     /**
@@ -135,6 +127,7 @@ public class AdminViewCourse extends javax.swing.JFrame {
         txt_searchCourse = new javax.swing.JTextField();
         lbl_Add = new javax.swing.JLabel();
         lbl_Add1 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -442,31 +435,34 @@ public class AdminViewCourse extends javax.swing.JFrame {
             }
         });
 
+        jLabel4.setIcon(new javax.swing.ImageIcon("C:\\Users\\sanir\\Desktop\\git Repo LMS\\Learning-Management-System\\LearningManagementSystem\\Images\\oui--app-reporting.png")); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 62, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 59, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(pnl_courseData, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(41, 41, 41))
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(245, 245, 245))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(txt_searchCourse, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(33, 33, 33)))
+                        .addComponent(txt_searchCourse, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btn_search)
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lbl_Add)
-                            .addComponent(lbl_Add1))
-                        .addGap(82, 82, 82))))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lbl_Add1)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(29, 29, 29))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(pnl_courseData, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(44, 44, 44))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -474,12 +470,13 @@ public class AdminViewCourse extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(27, 27, 27)
                 .addComponent(jLabel1)
-                .addGap(65, 65, 65)
+                .addGap(48, 48, 48)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(txt_searchCourse, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(btn_search))
-                    .addComponent(lbl_Add1))
+                    .addComponent(lbl_Add1)
+                    .addComponent(jLabel4))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lbl_Add)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -538,28 +535,23 @@ public class AdminViewCourse extends javax.swing.JFrame {
 
         String courseId = txt_searchCourse.getText().trim();
 
-// Validate if the course ID field is empty
         if (courseId.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Please enter a Course ID.");
             return;
         }
 
-// Validate if the course ID contains only alphanumeric characters
         if (!courseId.matches("[a-zA-Z0-9]+")) {
             JOptionPane.showMessageDialog(this, "Invalid characters in Course ID. Please enter a valid Course ID.");
             return;
         }
 
         try {
-            // Establish connection to the database
             Connection conn = DriverManager.getConnection(url, user, password);
 
-            // Prepare SQL query to fetch course data based on courseID
             String query = "SELECT * FROM Course WHERE courseID = ?";
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setString(1, courseId);
 
-            // Execute the query and process the result
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
@@ -574,7 +566,6 @@ public class AdminViewCourse extends javax.swing.JFrame {
                 txt_searchCourse.setText("");
             }
 
-            // Close resources
             rs.close();
             stmt.close();
             conn.close();
@@ -583,7 +574,6 @@ public class AdminViewCourse extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Error retrieving course data.");
         }
 
-        
     }//GEN-LAST:event_btn_searchActionPerformed
 
     private void btn_cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cancelActionPerformed
@@ -619,44 +609,36 @@ public class AdminViewCourse extends javax.swing.JFrame {
 
     private void lbl_AddMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbl_AddMouseClicked
         // TODO add your handling code here:
-        String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
-        String dbUsername = "root"; // Your MySQL username
-        String dbPassword = "";     // Your MySQL password
+        String connectionString = "jdbc:mysql://localhost:3306/LMS";
+        String dbUsername = "root";
+        String dbPassword = "";
 
         Connection conn = null;
         PreparedStatement stmt = null;
 
         try {
-            // Get the courseID from the text field
             String courseId = lbl_courseId.getText().trim();
 
-            // Ensure courseID is not empty
             if (courseId.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Course ID is required.");
                 return;
             }
 
-            // Confirm deletion
             int confirm = JOptionPane.showConfirmDialog(null,
                     "Are you sure you want to delete the course with ID: " + courseId + "?",
                     "Confirm Deletion",
                     JOptionPane.YES_NO_OPTION);
 
             if (confirm != JOptionPane.YES_OPTION) {
-                return; // If the user cancels, exit the method
+                return;
             }
 
-            // Establish database connection
             conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
 
-            // SQL query to delete the course
             String sql = "DELETE FROM Course WHERE courseID = ?";
             stmt = conn.prepareStatement(sql);
-
-            // Set the courseID parameter
             stmt.setString(1, courseId);
 
-            // Execute the delete statement
             int rowsAffected = stmt.executeUpdate();
 
             if (rowsAffected > 0) {
@@ -668,11 +650,9 @@ public class AdminViewCourse extends javax.swing.JFrame {
             }
 
         } catch (SQLException ex) {
-            // Handle SQL exceptions
             JOptionPane.showMessageDialog(null, "Error deleting course: " + ex.getMessage());
-            ex.printStackTrace(); // For debugging purposes
+            ex.printStackTrace();
         } finally {
-            // Close database resources
             try {
                 if (stmt != null) {
                     stmt.close();
@@ -684,6 +664,7 @@ public class AdminViewCourse extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Error closing database resources: " + ex.getMessage());
             }
         }
+
     }//GEN-LAST:event_lbl_AddMouseClicked
 
     /**
@@ -738,6 +719,7 @@ public class AdminViewCourse extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;

@@ -15,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.*;
+
 /**
  *
  * @author sanir
@@ -31,51 +32,42 @@ public class AdminViewStudent extends javax.swing.JFrame {
         this.adminID = adminID;
         lbl_index.setText(adminID);
         pnl_studentData.setVisible(false);
-        
-        String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
-        String dbUsername = "root"; // Your MySQL username
-        String dbPassword = "";     // Your MySQL password
+
+        String connectionString = "jdbc:mysql://localhost:3306/LMS";
+        String dbUsername = "root";
+        String dbPassword = "";
 
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
         try {
-            // Get the adminID from lbl_index
             String adminId = lbl_index.getText().trim();
 
-            // Ensure adminID is not empty
             if (adminId.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Admin ID is missing in lbl_index.");
                 return;
             }
 
-            // Establish database connection
             conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
 
-            // SQL query to fetch adminName from the Admin table
             String sql = "SELECT adminName FROM Admin WHERE adminID = ?";
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, adminId); // Set the adminID as a parameter
+            stmt.setString(1, adminId);
 
-            // Execute the query
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                // Retrieve the admin name and set it to lbl_name
                 String adminName = rs.getString("adminName");
-                lbl_name.setText(adminName); // Display the admin name in lbl_name
+                lbl_name.setText(adminName);
             } else {
-                // Display message if admin ID does not exist in the database
                 JOptionPane.showMessageDialog(this, "No admin found with ID: " + adminId);
-                lbl_name.setText(""); // Clear lbl_name
+                lbl_name.setText("");
             }
         } catch (SQLException ex) {
-            // Handle SQL exceptions
             JOptionPane.showMessageDialog(this, "Error retrieving admin name: " + ex.getMessage());
-            ex.printStackTrace(); // For debugging purposes
+            ex.printStackTrace();
         } finally {
-            // Close database resources
             try {
                 if (rs != null) {
                     rs.close();
@@ -90,7 +82,6 @@ public class AdminViewStudent extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Error closing database resources: " + ex.getMessage());
             }
         }
-        
     }
 
     /**
@@ -141,6 +132,7 @@ public class AdminViewStudent extends javax.swing.JFrame {
         lbl_studentEmail = new javax.swing.JLabel();
         lbl_add = new javax.swing.JLabel();
         btn_delet = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(875, 550));
@@ -496,6 +488,8 @@ public class AdminViewStudent extends javax.swing.JFrame {
             }
         });
 
+        jLabel16.setIcon(new javax.swing.ImageIcon("C:\\Users\\sanir\\Desktop\\git Repo LMS\\Learning-Management-System\\LearningManagementSystem\\Images\\oui--app-reporting.png")); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -516,7 +510,9 @@ public class AdminViewStudent extends javax.swing.JFrame {
                                 .addComponent(btn_search)
                                 .addGap(24, 24, 24)
                                 .addComponent(lbl_add, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(95, 95, 95))
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel16)
+                        .addGap(45, 45, 45))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(195, 195, 195))))
@@ -528,10 +524,12 @@ public class AdminViewStudent extends javax.swing.JFrame {
                 .addGap(44, 44, 44)
                 .addComponent(jLabel1)
                 .addGap(36, 36, 36)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txt_searchStudent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btn_search)
-                    .addComponent(lbl_add))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(txt_searchStudent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btn_search)
+                        .addComponent(lbl_add))
+                    .addComponent(jLabel16))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btn_delet)
                 .addGap(18, 18, 18)
@@ -588,7 +586,7 @@ public class AdminViewStudent extends javax.swing.JFrame {
 
     private void btn_editActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_editActionPerformed
         // TODO add your handling code here:lbl_studentId
-        AdminEditStudent adminEditStudent = new AdminEditStudent(lbl_index.getText(),lbl_studentId.getText());
+        AdminEditStudent adminEditStudent = new AdminEditStudent(lbl_index.getText(), lbl_studentId.getText());
         adminEditStudent.setVisible(true);
         this.hide();
     }//GEN-LAST:event_btn_editActionPerformed
@@ -646,10 +644,8 @@ public class AdminViewStudent extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Error retrieving student data.");
         }
 
-
-
         pnl_studentData.setVisible(true);
-        
+
     }//GEN-LAST:event_btn_searchActionPerformed
 
     private void btn_cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cancelActionPerformed
@@ -674,7 +670,7 @@ public class AdminViewStudent extends javax.swing.JFrame {
 
     private void btn_deletMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_deletMouseClicked
         // TODO add your handling code here:
-                String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
+        String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
         String dbUsername = "root"; // Your MySQL username
         String dbPassword = "";     // Your MySQL password
 
@@ -692,10 +688,10 @@ public class AdminViewStudent extends javax.swing.JFrame {
             }
 
             // Confirm deletion
-            int confirm = JOptionPane.showConfirmDialog(null, 
-                "Are you sure you want to delete the student with ID: " + studentId + "?", 
-                "Confirm Deletion", 
-                JOptionPane.YES_NO_OPTION);
+            int confirm = JOptionPane.showConfirmDialog(null,
+                    "Are you sure you want to delete the student with ID: " + studentId + "?",
+                    "Confirm Deletion",
+                    JOptionPane.YES_NO_OPTION);
 
             if (confirm != JOptionPane.YES_OPTION) {
                 return; // If the user cancels, exit the method
@@ -729,8 +725,12 @@ public class AdminViewStudent extends javax.swing.JFrame {
         } finally {
             // Close database resources
             try {
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(null, "Error closing database resources: " + ex.getMessage());
             }
@@ -790,6 +790,7 @@ public class AdminViewStudent extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;

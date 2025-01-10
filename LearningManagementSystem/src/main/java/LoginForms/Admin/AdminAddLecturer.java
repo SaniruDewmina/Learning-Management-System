@@ -15,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.*;
+
 /**
  *
  * @author sanir
@@ -30,51 +31,42 @@ public class AdminAddLecturer extends javax.swing.JFrame {
         initComponents();
         this.adminID = adminID;
         lbl_index.setText(adminID);
-        
-        String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
-        String dbUsername = "root"; // Your MySQL username
-        String dbPassword = "";     // Your MySQL password
+
+        String connectionString = "jdbc:mysql://localhost:3306/LMS";
+        String dbUsername = "root";
+        String dbPassword = "";
 
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
         try {
-            // Get the adminID from lbl_index
             String adminId = lbl_index.getText().trim();
 
-            // Ensure adminID is not empty
             if (adminId.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Admin ID is missing in lbl_index.");
                 return;
             }
 
-            // Establish database connection
             conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
 
-            // SQL query to fetch adminName from the Admin table
             String sql = "SELECT adminName FROM Admin WHERE adminID = ?";
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, adminId); // Set the adminID as a parameter
+            stmt.setString(1, adminId);
 
-            // Execute the query
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                // Retrieve the admin name and set it to lbl_name
                 String adminName = rs.getString("adminName");
-                lbl_name.setText(adminName); // Display the admin name in lbl_name
+                lbl_name.setText(adminName);
             } else {
-                // Display message if admin ID does not exist in the database
                 JOptionPane.showMessageDialog(this, "No admin found with ID: " + adminId);
-                lbl_name.setText(""); // Clear lbl_name
+                lbl_name.setText("");
             }
         } catch (SQLException ex) {
-            // Handle SQL exceptions
             JOptionPane.showMessageDialog(this, "Error retrieving admin name: " + ex.getMessage());
-            ex.printStackTrace(); // For debugging purposes
+            ex.printStackTrace();
         } finally {
-            // Close database resources
             try {
                 if (rs != null) {
                     rs.close();
@@ -620,77 +612,72 @@ public class AdminAddLecturer extends javax.swing.JFrame {
 
     private void btn_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addActionPerformed
         // TODO add your handling code here:
-        String url = "jdbc:mysql://localhost:3306/LMS"; // Replace with your database URL
-String user = "root"; // MySQL username
-String password = ""; // MySQL password
+        String url = "jdbc:mysql://localhost:3306/LMS";
+        String user = "root";
+        String password = "";
 
-String lecturerId = txt_lecturerId.getText().trim();
-String lecturerName = txt_lecturerName.getText().trim();
-String lecturerNic = txt_lecturerNic.getText().trim();
-String lecturerDob = txt_lecturerDob.getText().trim();
-String lecturerContactNo = txt_lecturerContactNo.getText().trim();
-String lecturerEmail = txt_lecturerEmail.getText().trim();
-String lecturerGender = (String) cmb_gender.getSelectedItem(); // Get gender from combo box
-String lecturerPassword = txt_password.getText();
-String confirmPassword = txt_confirmPassword.getText();
-String lecturerSecretPin = txt_secretPin.getText();
+        String lecturerId = txt_lecturerId.getText().trim();
+        String lecturerName = txt_lecturerName.getText().trim();
+        String lecturerNic = txt_lecturerNic.getText().trim();
+        String lecturerDob = txt_lecturerDob.getText().trim();
+        String lecturerContactNo = txt_lecturerContactNo.getText().trim();
+        String lecturerEmail = txt_lecturerEmail.getText().trim();
+        String lecturerGender = (String) cmb_gender.getSelectedItem();
+        String lecturerPassword = txt_password.getText();
+        String confirmPassword = txt_confirmPassword.getText();
+        String lecturerSecretPin = txt_secretPin.getText();
 
-// Validate fields
-if (lecturerId.isEmpty() || lecturerName.isEmpty() || lecturerNic.isEmpty() || lecturerDob.isEmpty() || 
-    lecturerContactNo.isEmpty() || lecturerEmail.isEmpty() || lecturerPassword.isEmpty() || 
-    confirmPassword.isEmpty() || lecturerSecretPin.isEmpty()) {
-    JOptionPane.showMessageDialog(this, "All fields are required.");
-    return;
-}
+        if (lecturerId.isEmpty() || lecturerName.isEmpty() || lecturerNic.isEmpty() || lecturerDob.isEmpty()
+                || lecturerContactNo.isEmpty() || lecturerEmail.isEmpty() || lecturerPassword.isEmpty()
+                || confirmPassword.isEmpty() || lecturerSecretPin.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "All fields are required.");
+            return;
+        }
 
-// Validate password and confirm password match
-if (!lecturerPassword.equals(confirmPassword)) {
-    JOptionPane.showMessageDialog(this, "Password and Confirm Password do not match.");
-    return;
-}
+        if (!lecturerPassword.equals(confirmPassword)) {
+            JOptionPane.showMessageDialog(this, "Password and Confirm Password do not match.");
+            return;
+        }
 
-try {
-    // Establish connection
-    Connection conn = DriverManager.getConnection(url, user, password);
+        try {
+            Connection conn = DriverManager.getConnection(url, user, password);
 
-    // Insert query
-    String query = "INSERT INTO Lecturer (lecturerID, lecturerName, lecturerNIC, lecturerDOB, lecturerContactNo, " +
-                   "lecturerEmail, lecturerGender, lecturerPassword, lecturerSecretPin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String query = "INSERT INTO Lecturer (lecturerID, lecturerName, lecturerNIC, lecturerDOB, lecturerContactNo, "
+                    + "lecturerEmail, lecturerGender, lecturerPassword, lecturerSecretPin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-    PreparedStatement stmt = conn.prepareStatement(query);
-    stmt.setString(1, lecturerId);
-    stmt.setString(2, lecturerName);
-    stmt.setString(3, lecturerNic);
-    stmt.setString(4, lecturerDob);
-    stmt.setString(5, lecturerContactNo);
-    stmt.setString(6, lecturerEmail);
-    stmt.setString(7, lecturerGender); // Set gender
-    stmt.setString(8, lecturerPassword); // Set password
-    stmt.setString(9, lecturerSecretPin);
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setString(1, lecturerId);
+            stmt.setString(2, lecturerName);
+            stmt.setString(3, lecturerNic);
+            stmt.setString(4, lecturerDob);
+            stmt.setString(5, lecturerContactNo);
+            stmt.setString(6, lecturerEmail);
+            stmt.setString(7, lecturerGender);
+            stmt.setString(8, lecturerPassword);
+            stmt.setString(9, lecturerSecretPin);
 
-    int rowsInserted = stmt.executeUpdate();
+            int rowsInserted = stmt.executeUpdate();
 
-    if (rowsInserted > 0) {
-        JOptionPane.showMessageDialog(this, "Lecturer added successfully.");
-        txt_lecturerId.setText("");
-        txt_lecturerName.setText("");
-        txt_lecturerNic.setText("");
-        txt_lecturerDob.setText("");
-        txt_lecturerContactNo.setText("");
-        txt_lecturerEmail.setText("");
-        cmb_gender.setSelectedIndex(0); // Reset combo box to the first item
-        txt_password.setText("");
-        txt_confirmPassword.setText("");
-        txt_secretPin.setText("");
-    }
+            if (rowsInserted > 0) {
+                JOptionPane.showMessageDialog(this, "Lecturer added successfully.");
+                txt_lecturerId.setText("");
+                txt_lecturerName.setText("");
+                txt_lecturerNic.setText("");
+                txt_lecturerDob.setText("");
+                txt_lecturerContactNo.setText("");
+                txt_lecturerEmail.setText("");
+                cmb_gender.setSelectedIndex(0);
+                txt_password.setText("");
+                txt_confirmPassword.setText("");
+                txt_secretPin.setText("");
+            }
 
-    // Close resources
-    stmt.close();
-    conn.close();
-} catch (SQLException ex) {
-    ex.printStackTrace();
-    JOptionPane.showMessageDialog(this, "Error adding lecturer.");
-}
+            stmt.close();
+            conn.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error adding lecturer.");
+        }
 
     }//GEN-LAST:event_btn_addActionPerformed
 

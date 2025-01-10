@@ -14,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.*;
+
 /**
  *
  * @author sanir
@@ -30,60 +31,55 @@ public class LecturerViewCourse extends javax.swing.JFrame {
         this.lecturerID = lecturerID;
         lbl_index.setText(lecturerID);
         pnl_courseData.setVisible(false);
-        // Database connection details
-String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Update with your DB details
-String dbUsername = "root"; // Your MySQL username
-String dbPassword = "";     // Your MySQL password
+        String connectionString = "jdbc:mysql://localhost:3306/LMS";
+        String dbUsername = "root";
+        String dbPassword = "";
 
-Connection conn = null;
-PreparedStatement stmt = null;
-ResultSet rs = null;
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
 
-try {
-    // Get the lecturerID from lbl_index
-    String lecturerId = lbl_index.getText().trim();
+        try {
+            String lecturerId = lbl_index.getText().trim();
 
-    // Ensure lecturerID is not empty
-    if (lecturerId.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Lecturer ID is missing in lbl_index.");
-        return;
-    }
+            if (lecturerId.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Lecturer ID is missing in lbl_index.");
+                return;
+            }
 
-    // Establish database connection
-    conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
+            conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
 
-    // SQL query to fetch lecturerName from the Lecturer table
-    String sql = "SELECT lecturerName FROM Lecturer WHERE lecturerID = ?";
-    stmt = conn.prepareStatement(sql);
-    stmt.setString(1, lecturerId); // Set the lecturerID as a parameter
+            String sql = "SELECT lecturerName FROM Lecturer WHERE lecturerID = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, lecturerId);
 
-    // Execute the query
-    rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
 
-    if (rs.next()) {
-        // Retrieve the lecturer name and set it to lbl_name
-        String lecturerName = rs.getString("lecturerName");
-        lbl_name.setText(lecturerName); // Display the lecturer name in lbl_name
-    } else {
-        // Display message if lecturer ID does not exist in the database
-        JOptionPane.showMessageDialog(this, "No lecturer found with ID: " + lecturerId);
-        lbl_name.setText(""); // Clear lbl_name
-    }
-} catch (SQLException ex) {
-    // Handle SQL exceptions
-    JOptionPane.showMessageDialog(this, "Error retrieving lecturer name: " + ex.getMessage());
-    ex.printStackTrace(); // For debugging purposes
-} finally {
-    // Close database resources
-    try {
-        if (rs != null) rs.close();
-        if (stmt != null) stmt.close();
-        if (conn != null) conn.close();
-    } catch (SQLException ex) {
-        JOptionPane.showMessageDialog(this, "Error closing database resources: " + ex.getMessage());
-    }
-}
-
+            if (rs.next()) {
+                String lecturerName = rs.getString("lecturerName");
+                lbl_name.setText(lecturerName);
+            } else {
+                JOptionPane.showMessageDialog(this, "No lecturer found with ID: " + lecturerId);
+                lbl_name.setText("");
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error retrieving lecturer name: " + ex.getMessage());
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error closing database resources: " + ex.getMessage());
+            }
+        }
     }
 
     /**
@@ -488,28 +484,23 @@ try {
 
         String courseId = txt_searchCourse.getText().trim();
 
-        // Validate if the course ID field is empty
         if (courseId.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Please enter a Course ID.");
             return;
         }
 
-        // Validate if the course ID contains only alphanumeric characters
         if (!courseId.matches("[a-zA-Z0-9]+")) {
             JOptionPane.showMessageDialog(this, "Invalid characters in Course ID. Please enter a valid Course ID.");
             return;
         }
 
         try {
-            // Establish connection to the database
             Connection conn = DriverManager.getConnection(url, user, password);
 
-            // Prepare SQL query to fetch course data based on courseID
             String query = "SELECT * FROM Course WHERE courseID = ?";
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setString(1, courseId);
 
-            // Execute the query and process the result
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
@@ -522,7 +513,6 @@ try {
                 JOptionPane.showMessageDialog(this, "No course found with ID: " + courseId);
             }
 
-            // Close resources
             rs.close();
             stmt.close();
             conn.close();
@@ -532,6 +522,7 @@ try {
         }
 
         pnl_courseData.setVisible(true);
+
     }//GEN-LAST:event_btn_searchActionPerformed
 
     private void btn_cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cancelActionPerformed

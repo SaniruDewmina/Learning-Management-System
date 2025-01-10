@@ -7,6 +7,15 @@ package LoginForms;
 import LoginForms.*;
 import java.awt.*;
 import javax.swing.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Logger;
+import javax.swing.*;
+
 /**
  *
  * @author sanir
@@ -226,29 +235,78 @@ public class AdminForgotPassword extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
-        pnl_changePassword.setVisible(true);
+        String newPassword = new String(txt_newPassword.getPassword()).trim();
+        String confirmPassword = new String(txt_confirmPassword.getPassword()).trim();
+        String adminID = txt_adminUsername.getText().trim();
 
+        if (!newPassword.equals(confirmPassword)) {
+            JOptionPane.showMessageDialog(this, "Passwords do not match. Please try again.");
+            return;
+        }
+
+        String connectionString = "jdbc:mysql://localhost:3306/LMS";
+        String dbUsername = "root";
+        String dbPassword = "";
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+
+        try {
+
+            if (newPassword.isEmpty() || confirmPassword.isEmpty() || adminID.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "All fields are required. Please fill in all details.");
+                return;
+            }
+
+            conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
+
+            String sql = "UPDATE Admin SET adminPassword = ? WHERE adminID = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, newPassword);
+            stmt.setString(2, adminID);
+
+            int rowsUpdated = stmt.executeUpdate();
+            if (rowsUpdated > 0) {
+                JOptionPane.showMessageDialog(this, "Password Reset Successful!");
+                AdminLogin adminLogin = new AdminLogin();
+                adminLogin.setVisible(true);
+                this.setVisible(false);
+            } else {
+                JOptionPane.showMessageDialog(this, "Invalid Admin ID or Error resetting password. Please try again.");
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error: Unable to reset password. Please contact support.");
+            ex.printStackTrace();
+        } finally {
+
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error Closing Resources: " + ex.getMessage());
+            }
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void CheckBox_showNewPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CheckBox_showNewPasswordActionPerformed
         // TODO add your handling code here:
         if (CheckBox_showNewPassword.isSelected()) {
-            // Show password by setting JPasswordField to a JTextField
-            txt_newPassword.setEchoChar((char) 0);  // This removes the password masking
+            txt_newPassword.setEchoChar((char) 0);
         } else {
-            // Hide password by setting the echo character back to the default
-            txt_newPassword.setEchoChar('*');  // This will mask the password with asterisks
+            txt_newPassword.setEchoChar('*');
         }
     }//GEN-LAST:event_CheckBox_showNewPasswordActionPerformed
 
     private void CheckBox_showConfirmPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CheckBox_showConfirmPasswordActionPerformed
         // TODO add your handling code here:
         if (CheckBox_showConfirmPassword.isSelected()) {
-            // Show password by setting JPasswordField to a JTextField
-            txt_confirmPassword.setEchoChar((char) 0);  // This removes the password masking
+            txt_confirmPassword.setEchoChar((char) 0);
         } else {
-            // Hide password by setting the echo character back to the default
-            txt_confirmPassword.setEchoChar('*');  // This will mask the password with asterisks
+            txt_confirmPassword.setEchoChar('*');
         }
     }//GEN-LAST:event_CheckBox_showConfirmPasswordActionPerformed
 
@@ -266,7 +324,49 @@ public class AdminForgotPassword extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        pnl_changePassword.setVisible(true);
+        String adminID = txt_adminUsername.getText().trim();
+        String adminPin = txt_secretPin.getText().trim();
+
+        String connectionString = "jdbc:mysql://localhost:3306/LMS";
+        String dbUsername = "root";
+        String dbPassword = "";
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
+            String sql = "SELECT adminID FROM Admin WHERE adminID = ? AND adminSecretPin = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, adminID);
+            stmt.setString(2, adminPin);
+
+            rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                JOptionPane.showMessageDialog(this, "Verification Successful! You can now reset your password.");
+                pnl_changePassword.setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(this, "Invalid Username or Secret Pin. Please try again.");
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error Closing Resources: " + ex.getMessage());
+            }
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
