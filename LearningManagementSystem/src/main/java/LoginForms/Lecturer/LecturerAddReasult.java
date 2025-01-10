@@ -32,22 +32,17 @@ public class LecturerAddReasult extends javax.swing.JFrame {
         this.lecturerID = lecturerID;
         lbl_index.setText(lecturerID);
 
-        String connectionString = "jdbc:mysql://localhost:3306/LMS"; // Database connection details
+        String connectionString = "jdbc:mysql://localhost:3306/LMS"; 
         String dbUsername = "root";
         String dbPassword = "";
 
         Connection conn = null;
         PreparedStatement stmtLecturer = null;
         PreparedStatement stmtCourses = null;
-        PreparedStatement stmtSubjects = null;
-        PreparedStatement stmtStudents = null;
         ResultSet rsLecturer = null;
         ResultSet rsCourses = null;
-        ResultSet rsSubjects = null;
-        ResultSet rsStudents = null;
 
         try {
-            // Get the lecturerID from lbl_index
             String lecturerId = lbl_index.getText().trim();
 
             if (lecturerId.isEmpty()) {
@@ -55,10 +50,8 @@ public class LecturerAddReasult extends javax.swing.JFrame {
                 return;
             }
 
-            // Establish database connection
             conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
 
-            // Retrieve Lecturer Name
             String sqlLecturer = "SELECT lecturerName FROM Lecturer WHERE lecturerID = ?";
             stmtLecturer = conn.prepareStatement(sqlLecturer);
             stmtLecturer.setString(1, lecturerId);
@@ -71,60 +64,27 @@ public class LecturerAddReasult extends javax.swing.JFrame {
             } else {
                 JOptionPane.showMessageDialog(this, "No lecturer found with ID: " + lecturerId);
                 lbl_name.setText("Lecturer Name:");
-                return; // Exit if lecturer not found
+                return; 
             }
 
-            // Populate cmb_course with courses
+            
             String queryCourses = "SELECT courseID FROM Course";
             stmtCourses = conn.prepareStatement(queryCourses);
             rsCourses = stmtCourses.executeQuery();
 
-            cmb_course.removeAllItems(); // Clear existing items
+            cmb_course.removeAllItems(); 
 
             while (rsCourses.next()) {
                 String courseId = rsCourses.getString("courseID");
-                cmb_course.addItem(courseId); // Add course IDs to combo box
+                cmb_course.addItem(courseId); 
             }
 
-            // Get the selected course
-            String selectedCourse = (String) cmb_course.getSelectedItem();
+            cmb_course.addActionListener(e -> updateSubjectAndStudent());
 
-            if (selectedCourse == null || selectedCourse.isEmpty()) {
-                cmb_subject.removeAllItems();
-                cmb_student.removeAllItems();
-                return;
-            }
-
-            // Populate cmb_subject with subjects
-            String querySubjects = "SELECT subjectName FROM Subject WHERE courseID = ?";
-            stmtSubjects = conn.prepareStatement(querySubjects);
-            stmtSubjects.setString(1, selectedCourse);
-            rsSubjects = stmtSubjects.executeQuery();
-
-            cmb_subject.removeAllItems(); // Clear existing items
-
-            while (rsSubjects.next()) {
-                String subjectName = rsSubjects.getString("subjectName");
-                cmb_subject.addItem(subjectName); // Add subjects to combo box
-            }
-
-            // Populate cmb_student with students
-            String queryStudents = "SELECT studentID FROM Student WHERE courseID = ?";
-            stmtStudents = conn.prepareStatement(queryStudents);
-            stmtStudents.setString(1, selectedCourse);
-            rsStudents = stmtStudents.executeQuery();
-
-            cmb_student.removeAllItems(); // Clear existing items
-
-            while (rsStudents.next()) {
-                String studentId = rsStudents.getString("studentID");
-                cmb_student.addItem(studentId); // Add student IDs to combo box
-            }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
             ex.printStackTrace();
         } finally {
-            // Close resources
             try {
                 if (rsLecturer != null) {
                     rsLecturer.close();
@@ -138,6 +98,66 @@ public class LecturerAddReasult extends javax.swing.JFrame {
                 if (stmtCourses != null) {
                     stmtCourses.close();
                 }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error closing resources: " + ex.getMessage());
+            }
+        }
+    }
+
+    private void updateSubjectAndStudent() {
+        String connectionString = "jdbc:mysql://localhost:3306/LMS";
+        String dbUsername = "root";
+        String dbPassword = "";
+
+        Connection conn = null;
+        PreparedStatement stmtSubjects = null;
+        PreparedStatement stmtStudents = null;
+        ResultSet rsSubjects = null;
+        ResultSet rsStudents = null;
+
+        try {
+            String selectedCourse = (String) cmb_course.getSelectedItem();
+
+            if (selectedCourse == null || selectedCourse.isEmpty()) {
+                cmb_subject.removeAllItems();
+                cmb_student.removeAllItems();
+                return;
+            }
+
+            conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
+
+            String querySubjects = "SELECT subjectName FROM Subject WHERE courseID = ?";
+            stmtSubjects = conn.prepareStatement(querySubjects);
+            stmtSubjects.setString(1, selectedCourse);
+            rsSubjects = stmtSubjects.executeQuery();
+
+            cmb_subject.removeAllItems(); 
+
+            while (rsSubjects.next()) {
+                String subjectName = rsSubjects.getString("subjectName");
+                cmb_subject.addItem(subjectName); 
+            }
+
+            String queryStudents = "SELECT studentID FROM Student WHERE courseID = ?";
+            stmtStudents = conn.prepareStatement(queryStudents);
+            stmtStudents.setString(1, selectedCourse);
+            rsStudents = stmtStudents.executeQuery();
+
+            cmb_student.removeAllItems(); 
+            
+            while (rsStudents.next()) {
+                String studentId = rsStudents.getString("studentID");
+                cmb_student.addItem(studentId); 
+                
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+            ex.printStackTrace();
+        } finally {
+            try {
                 if (rsSubjects != null) {
                     rsSubjects.close();
                 }
@@ -157,9 +177,7 @@ public class LecturerAddReasult extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Error closing resources: " + ex.getMessage());
             }
         }
-
     }
-    
 
     /**
      * This method is called from within the constructor to initialize the form.

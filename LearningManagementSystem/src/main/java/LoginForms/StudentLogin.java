@@ -211,15 +211,15 @@ public class StudentLogin extends javax.swing.JFrame {
         String studentPassword = txt_password.getText();
 
         String connectionString = "jdbc:mysql://localhost:3306/LMS";
-        String Username = "root";
-        String Password = "";
+        String dbUsername = "root";
+        String dbPassword = "";
 
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
         try {
-            conn = DriverManager.getConnection(connectionString, Username, Password);
+            conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
 
             String sql = "SELECT studentID, studentPassword FROM Student WHERE studentID = ? AND studentPassword = ?";
             stmt = conn.prepareStatement(sql);

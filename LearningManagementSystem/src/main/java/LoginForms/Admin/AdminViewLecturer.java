@@ -717,7 +717,8 @@ public class AdminViewLecturer extends javax.swing.JFrame {
                 String reportPath = "C:\\Users\\sanir\\Desktop\\git Repo LMS\\Learning-Management-System\\LearningManagementSystem\\src\\main\\java\\LoginForms\\Admin\\Reports\\LecturerDetails.jrxml";
                 JasperReport jr = JasperCompileManager.compileReport(reportPath);
                 JasperPrint jp = JasperFillManager.fillReport(jr, null, conn);
-                JasperViewer.viewReport(jp);
+                JasperViewer viewer = new JasperViewer(jp, false);
+                viewer.setVisible(true);
             }
 
         } catch (Exception Ex) {

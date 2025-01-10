@@ -208,15 +208,15 @@ public class AdminLogin extends javax.swing.JFrame {
         String adminPassword = txt_password.getText();
 
         String connectionString = "jdbc:mysql://localhost:3306/LMS";
-        String Username = "root";
-        String Password = "";
+        String dbUsername = "root";
+        String dbPassword = "";
 
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
         try {
-            conn = DriverManager.getConnection(connectionString, Username, Password);
+            conn = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
             String sql = "SELECT adminID, adminPassword FROM admin WHERE adminID = ? AND adminPassword = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, adminID);

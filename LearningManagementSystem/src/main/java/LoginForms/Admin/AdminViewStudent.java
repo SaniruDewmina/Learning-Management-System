@@ -645,7 +645,7 @@ public class AdminViewStudent extends javax.swing.JFrame {
             } else {
                 JOptionPane.showMessageDialog(this, "No student found with ID: " + studentId);
                 txt_searchStudent.setText("");
-                
+
             }
 
             // Close resources
@@ -657,7 +657,6 @@ public class AdminViewStudent extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Error retrieving student data.");
         }
 
-       
 
     }//GEN-LAST:event_btn_searchActionPerformed
 
@@ -752,13 +751,14 @@ public class AdminViewStudent extends javax.swing.JFrame {
 
     private void jLabel16MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel16MouseClicked
         // TODO add your handling code here:
-         try {
+        try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/LMS?zeroDateTimeBehavior=CONVERT_TO_NULL", "root", "")) {
                 String reportPath = "C:\\Users\\sanir\\Desktop\\git Repo LMS\\Learning-Management-System\\LearningManagementSystem\\src\\main\\java\\LoginForms\\Admin\\Reports\\StudentDetails.jrxml";
                 JasperReport jr = JasperCompileManager.compileReport(reportPath);
                 JasperPrint jp = JasperFillManager.fillReport(jr, null, conn);
-                JasperViewer.viewReport(jp);
+                JasperViewer viewer = new JasperViewer(jp, false);
+                viewer.setVisible(true); 
             }
 
         } catch (Exception Ex) {
