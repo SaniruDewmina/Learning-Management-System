@@ -682,7 +682,7 @@ public class AdminViewCourse extends javax.swing.JFrame {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/LMS?zeroDateTimeBehavior=CONVERT_TO_NULL", "root", "")) {
-                String reportPath = "C:\\Users\\sanir\\Desktop\\git Repo LMS\\Learning-Management-System\\LearningManagementSystem\\src\\main\\java\\LoginForms\\Admin\\Reports\\CourseSubjects.jrxml";
+                String reportPath = "C:\\Users\\sanir\\Desktop\\git Repo LMS\\Learning-Management-System\\LearningManagementSystem\\src\\main\\java\\LoginForms\\Admin\\Reports\\courseSubjects_1.jrxml";
                 JasperReport jr = JasperCompileManager.compileReport(reportPath);
                 JasperPrint jp = JasperFillManager.fillReport(jr, null, conn);
                 JasperViewer viewer = new JasperViewer(jp, false);
